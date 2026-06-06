@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Kente Luxe - Connection Test</title>
+</head>
+
+<body>
+    <h1>Testing Supabase Connection...</h1>
+    <p id="status">Connecting...</p>
+
+    <script type="module">
+        import { supabase } from './js/supabase.js'
+
+        const { data, error } = await supabase.from('products').select('*')
+
+        if (error) {
+            document.getElementById('status').textContent = '❌ Connection failed: ' + error.message
+        } else {
+            document.getElementById('status').textContent = '✅ Supabase connected! Products table is ready.'
+        }
+    </script>
+</body>
+
+</html>
