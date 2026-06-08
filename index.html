@@ -24,6 +24,7 @@
     <a href="login.html">Login</a>
     <button class="cart-btn">Cart (0)</button>
   </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
 </nav>
 
 <!-- HERO -->
@@ -93,54 +94,7 @@
     <a href="shop.html" class="view-all">View All →</a>
   </div>
   <div class="products-grid" id="products-grid">
-    <!-- Static placeholders — will be replaced by Supabase data -->
-    <div class="product-card">
-      <div class="product-img">
-        <div class="kente-pattern-bg"></div>
-        <div class="product-img-label"><span>KL</span><p>Product image</p></div>
-        <div class="product-badge">New</div>
-      </div>
-      <div class="product-info">
-        <div class="product-region">West African</div>
-        <div class="product-name">Kente Royal Gown</div>
-        <div class="product-occasion">Wedding · Festival</div>
-        <div class="product-footer">
-          <span class="product-price">GHS 850</span>
-          <button class="add-to-cart">Add to Cart</button>
-        </div>
-      </div>
-    </div>
-    <div class="product-card">
-      <div class="product-img">
-        <div class="kente-pattern-bg"></div>
-        <div class="product-img-label"><span>KL</span><p>Product image</p></div>
-        <div class="product-badge">Featured</div>
-      </div>
-      <div class="product-info">
-        <div class="product-region">Pan-African</div>
-        <div class="product-name">Ankara Blazer Set</div>
-        <div class="product-occasion">Formal · Casual</div>
-        <div class="product-footer">
-          <span class="product-price">GHS 620</span>
-          <button class="add-to-cart">Add to Cart</button>
-        </div>
-      </div>
-    </div>
-    <div class="product-card">
-      <div class="product-img">
-        <div class="kente-pattern-bg"></div>
-        <div class="product-img-label"><span>KL</span><p>Product image</p></div>
-      </div>
-      <div class="product-info">
-        <div class="product-region">West African</div>
-        <div class="product-name">Fugu Smock Shirt</div>
-        <div class="product-occasion">Casual · Festival</div>
-        <div class="product-footer">
-          <span class="product-price">GHS 380</span>
-          <button class="add-to-cart">Add to Cart</button>
-        </div>
-      </div>
-    </div>
+    <!-- Products will be loaded dynamically from Supabase -->
   </div>
 </section>
 
@@ -226,6 +180,29 @@
     <p>Crafted with pride in Ghana 🇬🇭</p>
   </div>
 </footer>
+
+<script type="module">
+  import { renderFeaturedProducts } from './js/products.js'
+  
+  // Navigation toggle
+  const navToggle = document.querySelector('.nav-toggle')
+  const navLinks = document.querySelector('.nav-links')
+  if (navToggle && navLinks) {
+    navToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open')
+    })
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('nav')) {
+        navLinks.classList.remove('open')
+      }
+    })
+  }
+  
+  // Render featured products when page loads
+  document.addEventListener('DOMContentLoaded', () => {
+    renderFeaturedProducts()
+  })
+</script>
 
 </body>
 </html>

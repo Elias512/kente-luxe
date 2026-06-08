@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop - Kente Luxe</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="kente-line"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">Kente <span>Luxe</span></a>
+  <ul class="nav-links">
+    <li><a href="shop.html">Shop</a></li>
+    <li><a href="lookbook.html">Lookbook</a></li>
+    <li><a href="custom-order.html">Custom Order</a></li>
+    <li><a href="index.html#story">Our Story</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html">Login</a>
+    <button class="cart-btn">Cart (0)</button>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+</nav>
+
+<!-- SHOP HEADER -->
+<section class="shop-header">
+  <div class="section-label">Collections</div>
+  <h1 class="section-title">Browse Our <em>Collections</em></h1>
+</section>
+
+<!-- SHOP FILTERS & PRODUCTS -->
+<section class="shop-container">
+  <!-- INLINE FILTERS -->
+  <div class="shop-filters">
+    <div class="filters-wrapper">
+      <!-- OCCASION FILTER -->
+      <div class="filter-group">
+        <h4 class="filter-title">Occasion</h4>
+        <div class="filter-options">
+          <label class="filter-checkbox">
+            <input type="checkbox" name="occasion" value="Wedding"> Wedding
+          </label>
+          <label class="filter-checkbox">
+            <input type="checkbox" name="occasion" value="Festival"> Festival
+          </label>
+          <label class="filter-checkbox">
+            <input type="checkbox" name="occasion" value="Formal"> Formal
+          </label>
+          <label class="filter-checkbox">
+            <input type="checkbox" name="occasion" value="Casual"> Casual
+          </label>
+        </div>
+      </div>
+
+      <!-- FABRIC TYPE FILTER -->
+      <div class="filter-group">
+        <h4 class="filter-title">Fabric Type</h4>
+        <div class="filter-options">
+          <label class="filter-checkbox">
+            <input type="checkbox" name="fabric_type" value="Kente"> Kente
+          </label>
+          <label class="filter-checkbox">
+            <input type="checkbox" name="fabric_type" value="Ankara"> Ankara
+          </label>
+          <label class="filter-checkbox">
+            <input type="checkbox" name="fabric_type" value="Smock"> Smock
+          </label>
+          <label class="filter-checkbox">
+            <input type="checkbox" name="fabric_type" value="Jewelry"> Jewelry
+          </label>
+        </div>
+      </div>
+
+      <!-- REGION FILTER -->
+      <div class="filter-group">
+        <h4 class="filter-title">Region</h4>
+        <div class="filter-options">
+          <label class="filter-checkbox">
+            <input type="checkbox" name="region" value="West African"> West African
+          </label>
+          <label class="filter-checkbox">
+            <input type="checkbox" name="region" value="East African"> East African
+          </label>
+          <label class="filter-checkbox">
+            <input type="checkbox" name="region" value="Pan-African"> Pan-African
+          </label>
+        </div>
+      </div>
+
+      <!-- PRICE RANGE FILTER -->
+      <div class="filter-group">
+        <h4 class="filter-title">Price Range</h4>
+        <div class="price-inputs">
+          <input type="number" id="price-min" placeholder="Min" min="0" class="price-input">
+          <span class="price-separator">—</span>
+          <input type="number" id="price-max" placeholder="Max" min="0" class="price-input">
+          <button id="price-filter-btn" class="btn-primary-kl">Apply</button>
+        </div>
+      </div>
+
+      <!-- CLEAR FILTERS -->
+      <button id="clear-filters" class="btn-outline-kl">Clear All Filters</button>
+    </div>
+  </div>
+
+  <!-- PRODUCTS SECTION -->
+  <div class="shop-content">
+    <!-- SORT & RESULTS HEADER -->
+    <div class="shop-top-bar">
+      <div class="results-info">
+        <span id="results-count">Loading...</span>
+      </div>
+      <div class="sort-dropdown">
+        <label for="sort-select">Sort by:</label>
+        <select id="sort-select">
+          <option value="newest">Newest</option>
+          <option value="price_asc">Price: Low to High</option>
+          <option value="price_desc">Price: High to Low</option>
+          <option value="bestsellers">Bestsellers</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- PRODUCTS GRID -->
+    <div class="products-grid" id="products-grid">
+      <!-- Products will be loaded dynamically -->
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="pagination-wrapper" id="pagination-wrapper">
+      <!-- Pagination buttons will be generated dynamically -->
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="index.html" class="nav-logo">Kente <span>Luxe</span></a>
+      <p>Premium African heritage fashion for the global stage. Wear your roots. Own your story.</p>
+      <div class="newsletter">
+        <input type="email" placeholder="Your email address">
+        <button>Subscribe</button>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Shop</h4>
+      <ul>
+        <li><a href="#">Women</a></li>
+        <li><a href="#">Men</a></li>
+        <li><a href="#">Accessories</a></li>
+        <li><a href="#">Custom Orders</a></li>
+        <li><a href="#">Lookbook</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Occasions</h4>
+      <ul>
+        <li><a href="#">Weddings</a></li>
+        <li><a href="#">Festivals</a></li>
+        <li><a href="#">Formal</a></li>
+        <li><a href="#">Casual</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">Our Story</a></li>
+        <li><a href="#">Heritage Points</a></li>
+        <li><a href="#">Shipping & Returns</a></li>
+        <li><a href="#">Contact Us</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="kente-line" style="margin-bottom:1.5rem;"></div>
+  <div class="footer-bottom">
+    <p>© 2025 Kente Luxe. All rights reserved.</p>
+    <p>Crafted with pride in Ghana 🇬🇭</p>
+  </div>
+</footer>
+
+<script type="module">
+  import { initShop } from './js/shop.js'
+  
+  // Navigation toggle
+  const navToggle = document.querySelector('.nav-toggle')
+  const navLinks = document.querySelector('.nav-links')
+  if (navToggle && navLinks) {
+    navToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open')
+    })
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('nav')) {
+        navLinks.classList.remove('open')
+      }
+    })
+  }
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    initShop()
+  })
+</script>
+
+</body>
+</html>
