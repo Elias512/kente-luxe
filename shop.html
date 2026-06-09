@@ -22,7 +22,7 @@
   </ul>
   <div class="nav-actions">
     <a href="login.html">Login</a>
-    <button class="cart-btn">Cart (0)</button>
+    <a href="cart.html" class="cart-btn">Cart (0)</a>
   </div>
   <button class="nav-toggle" aria-label="Toggle menu">☰</button>
 </nav>
@@ -180,13 +180,15 @@
   </div>
   <div class="kente-line" style="margin-bottom:1.5rem;"></div>
   <div class="footer-bottom">
-    <p>© 2025 Kente Luxe. All rights reserved.</p>
+    <p>© <span id="copyright-year"></span> Kente Luxe. All rights reserved.</p>
+    <script>document.getElementById('copyright-year').textContent = new Date().getFullYear()</script>
     <p>Crafted with pride in Ghana 🇬🇭</p>
   </div>
 </footer>
 
 <script type="module">
   import { initShop } from './js/shop.js'
+  import { initNavbarCart } from './js/cart.js'
   
   // Navigation toggle
   const navToggle = document.querySelector('.nav-toggle')
@@ -202,9 +204,8 @@
     })
   }
   
-  document.addEventListener('DOMContentLoaded', () => {
-    initShop()
-  })
+  initShop()
+  initNavbarCart()
 </script>
 
 </body>

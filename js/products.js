@@ -1,4 +1,5 @@
 import { supabase } from './supabase.js'
+import { addToCart } from './cart.js'
 
 // ============================================
 // FETCH FUNCTIONS
@@ -261,47 +262,6 @@ export async function renderShopProducts(filters = {}, sortBy = 'newest', page =
 }
 
 // ============================================
-// CART FUNCTIONS
-// ============================================
-
-/**
- * Add product to cart (localStorage)
- */
-export function addToCart(productId, quantity = 1) {
-  let cart = JSON.parse(localStorage.getItem('kente_cart')) || []
-
-  const existingItem = cart.find(item => item.productId === productId)
-
-  if (existingItem) {
-    existingItem.quantity += quantity
-  } else {
-    cart.push({ productId, quantity })
-  }
-
-  localStorage.setItem('kente_cart', JSON.stringify(cart))
-
-  // Dispatch custom event for cart update
-  window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { productId, quantity } }))
-
-  return cart
-}
-
-/**
- * Get cart from localStorage
- */
-export function getCart() {
-  return JSON.parse(localStorage.getItem('kente_cart')) || []
-}
-
-/**
- * Clear cart
- */
-export function clearCart() {
-  localStorage.removeItem('kente_cart')
-  window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { cart: [] } }))
-}
-
-// ============================================
 // EVENT LISTENERS
 // ============================================
 
@@ -312,16 +272,22 @@ export function attachCartListeners(container) {
   const buttons = container.querySelectorAll('.add-to-cart:not([disabled])')
 
   buttons.forEach(button => {
-    button.addEventListener('click', function (e) {
+    button.addEventListener('click', async function (e) {
       e.preventDefault()
       const productId = this.dataset.productId
-      addToCart(productId, 1)
+      const success = await addToCart(productId, 1)
 
       // Show feedback
       const originalText = this.textContent
-      this.textContent = 'Added ✓'
-      this.style.background = 'var(--gold)'
-      this.style.color = 'var(--dark)'
+      if (success) {
+        this.textContent = 'Added ✓'
+        this.style.background = 'var(--gold)'
+        this.style.color = 'var(--dark)'
+      } else {
+        this.textContent = 'Failed'
+        this.style.background = '#B71C1C'
+        this.style.color = '#ffcdd2'
+      }
 
       setTimeout(() => {
         this.textContent = originalText
@@ -371,9 +337,6 @@ export default {
   createSkeletonLoader,
   renderFeaturedProducts,
   renderShopProducts,
-  addToCart,
-  getCart,
-  clearCart,
   attachCartListeners,
   getPriceRange
 }

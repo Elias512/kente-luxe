@@ -37,9 +37,6 @@ export async function initShop() {
   
   // Setup event listeners
   setupEventListeners()
-  
-  // Update cart count
-  updateCartCount()
 }
 
 // ============================================
@@ -151,15 +148,6 @@ function generatePagination(total) {
   })
 }
 
-function updateCartCount() {
-  const cart = JSON.parse(localStorage.getItem('kente_cart')) || []
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0)
-  const cartBtn = document.querySelector('.cart-btn')
-  if (cartBtn) {
-    cartBtn.textContent = `Cart (${totalItems})`
-  }
-}
-
 // ============================================
 // EVENT LISTENERS
 // ============================================
@@ -209,11 +197,6 @@ function setupEventListeners() {
   // Clear all filters
   document.getElementById('clear-filters').addEventListener('click', () => {
     clearAllFilters()
-  })
-
-  // Cart updates
-  window.addEventListener('cartUpdated', () => {
-    updateCartCount()
   })
 }
 
