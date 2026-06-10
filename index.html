@@ -18,12 +18,13 @@
     <li><a href="shop.html">Shop</a></li>
     <li><a href="lookbook.html">Lookbook</a></li>
     <li><a href="custom-order.html">Custom Order</a></li>
-    <li><a href="#story">Our Story</a></li>
+    <li><a href="our-story.html">Our Story</a></li>
   </ul>
   <div class="nav-actions">
     <a href="login.html">Login</a>
-    <button class="cart-btn">Cart (0)</button>
+    <a href="cart.html" class="cart-btn">Cart (0)</a>
   </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
 </nav>
 
 <!-- HERO -->
@@ -93,54 +94,7 @@
     <a href="shop.html" class="view-all">View All →</a>
   </div>
   <div class="products-grid" id="products-grid">
-    <!-- Static placeholders — will be replaced by Supabase data -->
-    <div class="product-card">
-      <div class="product-img">
-        <div class="kente-pattern-bg"></div>
-        <div class="product-img-label"><span>KL</span><p>Product image</p></div>
-        <div class="product-badge">New</div>
-      </div>
-      <div class="product-info">
-        <div class="product-region">West African</div>
-        <div class="product-name">Kente Royal Gown</div>
-        <div class="product-occasion">Wedding · Festival</div>
-        <div class="product-footer">
-          <span class="product-price">GHS 850</span>
-          <button class="add-to-cart">Add to Cart</button>
-        </div>
-      </div>
-    </div>
-    <div class="product-card">
-      <div class="product-img">
-        <div class="kente-pattern-bg"></div>
-        <div class="product-img-label"><span>KL</span><p>Product image</p></div>
-        <div class="product-badge">Featured</div>
-      </div>
-      <div class="product-info">
-        <div class="product-region">Pan-African</div>
-        <div class="product-name">Ankara Blazer Set</div>
-        <div class="product-occasion">Formal · Casual</div>
-        <div class="product-footer">
-          <span class="product-price">GHS 620</span>
-          <button class="add-to-cart">Add to Cart</button>
-        </div>
-      </div>
-    </div>
-    <div class="product-card">
-      <div class="product-img">
-        <div class="kente-pattern-bg"></div>
-        <div class="product-img-label"><span>KL</span><p>Product image</p></div>
-      </div>
-      <div class="product-info">
-        <div class="product-region">West African</div>
-        <div class="product-name">Fugu Smock Shirt</div>
-        <div class="product-occasion">Casual · Festival</div>
-        <div class="product-footer">
-          <span class="product-price">GHS 380</span>
-          <button class="add-to-cart">Add to Cart</button>
-        </div>
-      </div>
-    </div>
+    <!-- Products will be loaded dynamically from Supabase -->
   </div>
 </section>
 
@@ -213,7 +167,7 @@
     <div class="footer-col">
       <h4>Company</h4>
       <ul>
-        <li><a href="#">Our Story</a></li>
+        <li><a href="our-story.html">Our Story</a></li>
         <li><a href="#">Heritage Points</a></li>
         <li><a href="#">Shipping & Returns</a></li>
         <li><a href="#">Contact Us</a></li>
@@ -222,10 +176,34 @@
   </div>
   <div class="kente-line" style="margin-bottom:1.5rem;"></div>
   <div class="footer-bottom">
-    <p>© 2025 Kente Luxe. All rights reserved.</p>
+    <p>© <span id="copyright-year"></span> Kente Luxe. All rights reserved.</p>
+    <script>document.getElementById('copyright-year').textContent = new Date().getFullYear()</script>
     <p>Crafted with pride in Ghana 🇬🇭</p>
   </div>
 </footer>
+
+<script type="module">
+  import { renderFeaturedProducts } from './js/products.js'
+  import { initNavbarCart } from './js/cart.js'
+  
+  // Navigation toggle
+  const navToggle = document.querySelector('.nav-toggle')
+  const navLinks = document.querySelector('.nav-links')
+  if (navToggle && navLinks) {
+    navToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open')
+    })
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('nav')) {
+        navLinks.classList.remove('open')
+      }
+    })
+  }
+  
+  // Render featured products and init cart
+  renderFeaturedProducts()
+  initNavbarCart()
+</script>
 
 </body>
 </html>
