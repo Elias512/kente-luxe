@@ -18,7 +18,7 @@
     <li><a href="shop.html">Shop</a></li>
     <li><a href="lookbook.html">Lookbook</a></li>
     <li><a href="custom-order.html">Custom Order</a></li>
-    <li><a href="index.html#story">Our Story</a></li>
+    <li><a href="our-story.html">Our Story</a></li>
   </ul>
   <div class="nav-actions">
     <a href="login.html">Login</a>
@@ -138,6 +138,61 @@
   </div>
 </section>
 
+<!-- PRODUCT DETAIL MODAL -->
+<div class="product-modal" id="product-modal">
+  <div class="product-modal-backdrop" id="modal-backdrop"></div>
+  <div class="product-modal-content">
+    <button class="product-modal-close" id="modal-close">✕</button>
+    <div class="product-modal-inner" id="modal-inner">
+      <div class="product-modal-image">
+        <div class="kente-pattern-bg"></div>
+        <div class="product-modal-img-content">
+          <span class="product-modal-img-icon">KL</span>
+          <p id="modal-fabric-label">Product</p>
+        </div>
+        <div class="product-modal-badge" id="modal-badge"></div>
+      </div>
+      <div class="product-modal-info">
+        <div class="product-modal-region" id="modal-region"></div>
+        <h2 class="product-modal-name" id="modal-name"></h2>
+        <div class="product-modal-occasion" id="modal-occasion"></div>
+        <div class="product-modal-price-row">
+          <div class="product-modal-price" id="modal-price"></div>
+          <div class="product-modal-stock" id="modal-stock"></div>
+        </div>
+        <div class="product-modal-description" id="modal-description"></div>
+        <div class="product-modal-meta" id="modal-meta"></div>
+        <div class="product-modal-story" id="modal-story-section">
+          <div class="product-detail-section-label">The Story</div>
+          <p id="modal-story"></p>
+        </div>
+        <div class="product-modal-care" id="modal-care-section">
+          <div class="product-detail-section-label">Care Instructions</div>
+          <p id="modal-care"></p>
+        </div>
+        <div class="product-modal-colors" id="modal-colors-section">
+          <div class="product-detail-section-label">Color Palette</div>
+          <div class="product-modal-colors-list" id="modal-colors"></div>
+        </div>
+        <div class="product-modal-actions">
+          <div class="product-modal-qty">
+            <label class="form-label">Quantity</label>
+            <div class="quantity-control">
+              <button class="qty-btn" id="modal-qty-minus">−</button>
+              <input type="number" id="modal-qty" class="qty-input" value="1" min="1" max="99">
+              <button class="qty-btn" id="modal-qty-plus">+</button>
+            </div>
+          </div>
+          <button class="btn-primary-kl product-modal-add-btn" id="modal-add-btn">
+            <span class="checkout-spinner" id="modal-add-spinner" style="display: none;"></span>
+            <span id="modal-add-text">Add to Cart</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- FOOTER -->
 <footer>
   <div class="footer-grid">
@@ -171,7 +226,7 @@
     <div class="footer-col">
       <h4>Company</h4>
       <ul>
-        <li><a href="#">Our Story</a></li>
+        <li><a href="our-story.html">Our Story</a></li>
         <li><a href="#">Heritage Points</a></li>
         <li><a href="#">Shipping & Returns</a></li>
         <li><a href="#">Contact Us</a></li>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout - Kente Luxe</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="kente-line"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">Kente <span>Luxe</span></a>
+  <ul class="nav-links">
+    <li><a href="shop.html">Shop</a></li>
+    <li><a href="lookbook.html">Lookbook</a></li>
+    <li><a href="custom-order.html">Custom Order</a></li>
+    <li><a href="our-story.html">Our Story</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html">Login</a>
+    <a href="cart.html" class="cart-btn">Cart (0)</a>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+</nav>
+
+<!-- CHECKOUT HEADER -->
+<section class="checkout-header">
+  <a href="cart.html" class="checkout-back">← Back to Cart</a>
+  <h1 class="section-title" style="margin: 0;">Checkout</h1>
+</section>
+
+<!-- CHECKOUT CONTENT -->
+<section class="checkout-section">
+
+  <!-- LOADING -->
+  <div class="checkout-loading" id="checkout-loading">
+    <div class="cart-loader"></div>
+    <p>Loading your order...</p>
+  </div>
+
+  <!-- EMPTY CART -->
+  <div class="checkout-empty" id="checkout-empty" style="display: none;">
+    <div class="checkout-empty-icon">🛒</div>
+    <h2>Your cart is empty</h2>
+    <p>Add some pieces to your cart before checking out.</p>
+    <a href="shop.html" class="btn-primary-kl">Browse Collections</a>
+  </div>
+
+  <!-- ORDER SUMMARY -->
+  <div class="checkout-summary" id="checkout-summary" style="display: none;">
+    <div class="checkout-summary-header">
+      <h3>Order Summary</h3>
+      <span id="checkout-item-count">0 items</span>
+    </div>
+    <div class="checkout-summary-items" id="checkout-items">
+      <!-- Rendered by checkout.js -->
+    </div>
+    <div class="checkout-totals">
+      <div class="checkout-total-row">
+        <span>Subtotal</span>
+        <span id="checkout-subtotal">GHS 0</span>
+      </div>
+      <div class="checkout-total-row">
+        <span>Tax (12.5% VAT)</span>
+        <span id="checkout-tax">GHS 0</span>
+      </div>
+      <div class="checkout-total-row">
+        <span>Delivery</span>
+        <span id="checkout-delivery">GHS 0</span>
+      </div>
+      <div class="checkout-grand-total">
+        <span>Total</span>
+        <span id="checkout-total">GHS 0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- DELIVERY FORM -->
+  <div class="checkout-form-section" id="checkout-form-section" style="display: none;">
+    <div class="checkout-form-header">
+      <h3>Delivery Details</h3>
+    </div>
+    <form id="checkout-form" class="checkout-form" novalidate>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="full_name">Full Name <span class="form-required">*</span></label>
+          <input type="text" id="full_name" name="full_name" class="form-input" placeholder="Your full name" required>
+          <div class="form-error" style="display: none;"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="email">Email <span class="form-required">*</span></label>
+          <input type="email" id="email" name="email" class="form-input" placeholder="your@email.com" required>
+          <div class="form-error" style="display: none;"></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="phone">Phone <span class="form-required">*</span></label>
+          <input type="tel" id="phone" name="phone" class="form-input" placeholder="+233 XX XXX XXXX" required>
+          <div class="form-error" style="display: none;"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="region">Region <span class="form-required">*</span></label>
+          <select id="region" name="region" class="form-select" required>
+            <option value="">Select a region</option>
+            <option value="Greater Accra">Greater Accra</option>
+            <option value="Ashanti">Ashanti</option>
+            <option value="Eastern">Eastern</option>
+            <option value="Western">Western</option>
+            <option value="Central">Central</option>
+            <option value="Volta">Volta</option>
+            <option value="Northern">Northern</option>
+            <option value="Upper East">Upper East</option>
+            <option value="Upper West">Upper West</option>
+            <option value="Bono">Bono</option>
+            <option value="Bono East">Bono East</option>
+            <option value="Ahafo">Ahafo</option>
+            <option value="Oti">Oti</option>
+            <option value="North East">North East</option>
+            <option value="Savannah">Savannah</option>
+            <option value="Western North">Western North</option>
+            <option value="International">International</option>
+          </select>
+          <div class="form-error" style="display: none;"></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="address">Street Address <span class="form-required">*</span></label>
+        <input type="text" id="address" name="address" class="form-input" placeholder="Street name, building, house number" required>
+        <div class="form-error" style="display: none;"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="city">City / Town <span class="form-required">*</span></label>
+          <input type="text" id="city" name="city" class="form-input" placeholder="City or town" required>
+          <div class="form-error" style="display: none;"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="notes">Delivery Notes</label>
+          <textarea id="notes" name="notes" class="form-textarea" placeholder="Special delivery instructions, landmark, etc."></textarea>
+        </div>
+      </div>
+
+      <div class="checkout-payment-info">
+        <h4>Payment</h4>
+        <p>Payment integration will be available in a future release. Your order will be confirmed via email, and our team will reach out to complete payment.</p>
+      </div>
+
+      <div class="checkout-form-error" id="checkout-form-error" style="display: none;"></div>
+
+      <button type="submit" class="btn-primary-kl checkout-submit-btn" id="place-order-btn">
+        <span class="checkout-spinner" id="order-spinner" style="display: none;"></span>
+        <span id="order-btn-text">Place Order</span>
+      </button>
+    </form>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="checkout-success" id="checkout-success" style="display: none;">
+    <div class="checkout-success-icon">✓</div>
+    <h2>Order Confirmed!</h2>
+    <p>Thank you for your order. We'll send a confirmation to <strong id="order-confirmation-email">your email</strong>.</p>
+    <p class="checkout-success-id">Order Reference: <span id="order-confirmation-id">Confirmed</span></p>
+    <p class="checkout-success-text">Our team will review your order and contact you within 24–48 hours to arrange payment and delivery.</p>
+    <a href="shop.html" class="btn-primary-kl">Continue Shopping</a>
+  </div>
+
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="index.html" class="nav-logo">Kente <span>Luxe</span></a>
+      <p>Premium African heritage fashion for the global stage. Wear your roots. Own your story.</p>
+      <div class="newsletter">
+        <input type="email" placeholder="Your email address">
+        <button>Subscribe</button>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Shop</h4>
+      <ul>
+        <li><a href="#">Women</a></li>
+        <li><a href="#">Men</a></li>
+        <li><a href="#">Accessories</a></li>
+        <li><a href="#">Custom Orders</a></li>
+        <li><a href="#">Lookbook</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Occasions</h4>
+      <ul>
+        <li><a href="#">Weddings</a></li>
+        <li><a href="#">Festivals</a></li>
+        <li><a href="#">Formal</a></li>
+        <li><a href="#">Casual</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="our-story.html">Our Story</a></li>
+        <li><a href="#">Heritage Points</a></li>
+        <li><a href="#">Shipping & Returns</a></li>
+        <li><a href="#">Contact Us</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="kente-line" style="margin-bottom:1.5rem;"></div>
+  <div class="footer-bottom">
+    <p>© <span id="copyright-year"></span> Kente Luxe. All rights reserved.</p>
+    <script>document.getElementById('copyright-year').textContent = new Date().getFullYear()</script>
+    <p>Crafted with pride in Ghana 🇬🇭</p>
+  </div>
+</footer>
+
+<script type="module">
+  import { loadCheckout } from './js/checkout.js'
+  import { initNavbarCart } from './js/cart.js'
+
+  const navToggle = document.querySelector('.nav-toggle')
+  const navLinks = document.querySelector('.nav-links')
+  if (navToggle && navLinks) {
+    navToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open')
+    })
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('nav')) {
+        navLinks.classList.remove('open')
+      }
+    })
+  }
+
+  loadCheckout()
+  initNavbarCart()
+</script>
+
+</body>
+</html>

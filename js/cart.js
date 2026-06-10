@@ -49,6 +49,8 @@ export function getGuestId() {
 // CART CRUD OPERATIONS
 // ============================================
 
+export { apiFetch, SUPABASE_URL, HEADERS }
+
 export async function addToCart(productId, quantity = 1) {
   try {
     const guestId = getGuestId()
