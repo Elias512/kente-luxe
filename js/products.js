@@ -13,7 +13,7 @@ export async function fetchFeaturedProducts() {
   try {
     const { data, error } = await supabase
       .from('products')
-      .select('id, name, price, region, occasion, category, description, stock, featured, fabric_type')
+      .select('id, name, price, region, occasion, category, description, stock, featured, fabric_type, image_url')
       .eq('featured', true)
       .order('created_at', { ascending: false })
       .limit(3)
@@ -38,7 +38,7 @@ export async function fetchAllProducts(filters = {}, sortBy = 'newest', page = 1
   try {
     let query = supabase
       .from('products')
-      .select('id, name, price, region, occasion, category, description, stock, featured, fabric_type, gender, subcategory', { count: 'exact' })
+      .select('id, name, price, region, occasion, category, description, stock, featured, fabric_type, gender, subcategory, image_url', { count: 'exact' })
 
     // Apply filters
     if (filters.occasions && filters.occasions.length > 0) {
@@ -164,11 +164,14 @@ export function createProductCard(product) {
   return `
     <div class="product-card" data-product-id="${product.id}">
       <div class="product-img">
-        <div class="kente-pattern-bg"></div>
-        <div class="product-img-label">
-          <span>KL</span>
-          <p>${product.fabric_type || 'Product image'}</p>
-        </div>
+        ${product.image_url
+          ? `<img class="product-img-src" src="${product.image_url}" alt="${product.name}" loading="lazy">`
+          : `<div class="kente-pattern-bg"></div>
+             <div class="product-img-label">
+               <span>KL</span>
+               <p>${product.fabric_type || 'Product image'}</p>
+             </div>`
+        }
         ${product.stock === 0 ? '<div class="product-badge out-of-stock">Out of Stock</div>' : '<div class="product-badge">In Stock</div>'}
       </div>
       <div class="product-info">

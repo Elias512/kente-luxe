@@ -105,6 +105,8 @@ export async function loadCheckout() {
 
   const subtotal = await calcSubtotal()
   renderOrderSummary(items, subtotal)
+  setupPaymentMethodToggle()
+  setupCardInputFormatting()
   setupFormSubmission()
 }
 
@@ -136,11 +138,63 @@ function renderOrderSummary(items, subtotal) {
   document.getElementById('checkout-total').textContent = `GHS ${total.toLocaleString()}`
 }
 
+function setupPaymentMethodToggle() {
+  const radios = document.querySelectorAll('input[name="payment_method"]')
+  const mobileForm = document.getElementById('payment-form-mobile')
+  const visaForm = document.getElementById('payment-form-visa')
+  const cards = document.querySelectorAll('.payment-method-card')
+
+  function togglePayment(value) {
+    cards.forEach(c => c.classList.remove('active'))
+    if (value === 'mobile_money') {
+      cards[0]?.classList.add('active')
+      if (mobileForm) mobileForm.style.display = 'block'
+      if (visaForm) visaForm.style.display = 'none'
+    } else if (value === 'visa') {
+      cards[1]?.classList.add('active')
+      if (mobileForm) mobileForm.style.display = 'none'
+      if (visaForm) visaForm.style.display = 'block'
+    }
+  }
+
+  togglePayment('mobile_money')
+
+  radios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      if (radio.checked) togglePayment(radio.value)
+    })
+  })
+}
+
+function setupCardInputFormatting() {
+  const cardNumber = document.getElementById('card_number')
+  const cardExpiry = document.getElementById('card_expiry')
+
+  if (cardNumber) {
+    cardNumber.addEventListener('input', () => {
+      let val = cardNumber.value.replace(/\D/g, '').slice(0, 16)
+      val = val.replace(/(.{4})/g, '$1 ').trim()
+      cardNumber.value = val
+    })
+  }
+
+  if (cardExpiry) {
+    cardExpiry.addEventListener('input', () => {
+      let val = cardExpiry.value.replace(/\D/g, '').slice(0, 4)
+      if (val.length >= 3) {
+        val = val.slice(0, 2) + '/' + val.slice(2)
+      }
+      cardExpiry.value = val
+    })
+  }
+}
+
 function setupFormSubmission() {
   const form = document.getElementById('checkout-form')
   const submitBtn = document.getElementById('place-order-btn')
   const spinner = document.getElementById('order-spinner')
   const btnText = document.getElementById('order-btn-text')
+  const processingEl = document.getElementById('checkout-processing')
 
   if (!form) return
 
@@ -149,15 +203,20 @@ function setupFormSubmission() {
     if (isSubmitting) return
     if (!validateForm()) return
 
+    showProcessing(processingEl)
+
     isSubmitting = true
     if (submitBtn) submitBtn.disabled = true
     if (spinner) spinner.style.display = 'inline-block'
     if (btnText) btnText.textContent = 'Placing Order...'
 
+    await new Promise(resolve => setTimeout(resolve, 2500))
+
     try {
       const formData = new FormData(form)
       const items = await fetchCartItems()
       const total = items.reduce((sum, item) => sum + (item.products?.price || 0) * item.quantity, 0)
+      const paymentMethod = formData.get('payment_method')
 
       const orderResult = await apiFetch('orders', {
         method: 'POST',
@@ -172,7 +231,9 @@ function setupFormSubmission() {
           delivery_region: formData.get('region'),
           notes: formData.get('notes') || '',
           total,
-          status: 'pending'
+          status: 'pending',
+          payment_method: paymentMethod,
+          payment_status: 'paid'
         })
       })
 
@@ -193,10 +254,12 @@ function setupFormSubmission() {
       )
 
       await clearCart()
+      hideProcessing(processingEl)
       showSuccess(orderId, formData.get('email'))
       updateNavbarCartCount()
     } catch (error) {
       console.error('Order submission failed:', error)
+      hideProcessing(processingEl)
       showFormError('Something went wrong placing your order. Please try again.')
       isSubmitting = false
       if (submitBtn) submitBtn.disabled = false
@@ -242,7 +305,121 @@ function validateForm() {
     valid = false
   }
 
+  const paymentMethod = form.querySelector('input[name="payment_method"]:checked')
+  if (!paymentMethod) {
+    showFormError('Please select a payment method')
+    valid = false
+  } else if (paymentMethod.value === 'mobile_money') {
+    valid = validateMobilePayment(form) && valid
+  } else if (paymentMethod.value === 'visa') {
+    valid = validateVisaPayment(form) && valid
+  }
+
   return valid
+}
+
+function validateMobilePayment(form) {
+  let valid = true
+  const network = form.querySelector('[name="mobile_network"]')
+  const phone = form.querySelector('[name="mobile_phone"]')
+  const netError = network?.parentElement?.querySelector('.form-error')
+  const phoneError = phone?.parentElement?.querySelector('.form-error')
+
+  if (network) network.style.borderColor = ''
+  if (phone) phone.style.borderColor = ''
+  if (netError) netError.style.display = 'none'
+  if (phoneError) phoneError.style.display = 'none'
+
+  if (!network?.value) {
+    if (network) network.style.borderColor = '#e74c3c'
+    if (netError) {
+      netError.style.display = 'block'
+      netError.textContent = 'Please select a mobile network'
+    }
+    valid = false
+  }
+
+  if (!phone?.value.trim() || !/^(0\d{9}|\+233\d{9}|233\d{9})$/.test(phone.value.trim().replace(/\s/g, ''))) {
+    if (phone) phone.style.borderColor = '#e74c3c'
+    if (phoneError) {
+      phoneError.style.display = 'block'
+      phoneError.textContent = 'Enter a valid Ghanaian phone number (e.g. 054 XXX XXXX)'
+    }
+    valid = false
+  }
+
+  return valid
+}
+
+function validateVisaPayment(form) {
+  let valid = true
+  const name = form.querySelector('[name="card_name"]')
+  const number = form.querySelector('[name="card_number"]')
+  const expiry = form.querySelector('[name="card_expiry"]')
+  const cvv = form.querySelector('[name="card_cvv"]')
+
+  const nameError = name?.parentElement?.querySelector('.form-error')
+  const numError = number?.parentElement?.querySelector('.form-error')
+  const expError = expiry?.parentElement?.querySelector('.form-error')
+  const cvvError = cvv?.parentElement?.querySelector('.form-error')
+
+  if (name) name.style.borderColor = ''
+  if (number) number.style.borderColor = ''
+  if (expiry) expiry.style.borderColor = ''
+  if (cvv) cvv.style.borderColor = ''
+  if (nameError) nameError.style.display = 'none'
+  if (numError) numError.style.display = 'none'
+  if (expError) expError.style.display = 'none'
+  if (cvvError) cvvError.style.display = 'none'
+
+  if (!name?.value.trim()) {
+    if (name) name.style.borderColor = '#e74c3c'
+    if (nameError) {
+      nameError.style.display = 'block'
+      nameError.textContent = 'Cardholder name is required'
+    }
+    valid = false
+  }
+
+  const cardNum = number?.value?.replace(/\s/g, '') || ''
+  if (!/^\d{16}$/.test(cardNum)) {
+    if (number) number.style.borderColor = '#e74c3c'
+    if (numError) {
+      numError.style.display = 'block'
+      numError.textContent = 'Enter a valid 16-digit card number'
+    }
+    valid = false
+  }
+
+  if (!/^\d{2}\/\d{2}$/.test(expiry?.value?.trim() || '')) {
+    if (expiry) expiry.style.borderColor = '#e74c3c'
+    if (expError) {
+      expError.style.display = 'block'
+      expError.textContent = 'Use MM/YY format'
+    }
+    valid = false
+  }
+
+  if (!/^\d{3}$/.test(cvv?.value?.trim() || '')) {
+    if (cvv) cvv.style.borderColor = '#e74c3c'
+    if (cvvError) {
+      cvvError.style.display = 'block'
+      cvvError.textContent = 'Enter a valid 3-digit CVV'
+    }
+    valid = false
+  }
+
+  return valid
+}
+
+function showProcessing(el) {
+  if (!el) return
+  el.style.display = 'flex'
+}
+
+function hideProcessing(el) {
+  if (!el) return
+  el.style.display = 'none'
 }
 
 function showSuccess(orderId, email) {
@@ -252,10 +429,7 @@ function showSuccess(orderId, email) {
 
   if (summaryEl) summaryEl.style.display = 'none'
   if (formEl) formEl.style.display = 'none'
-  if (successEl) {
-    successEl.style.display = 'flex'
-    console.log('Showing success screen')
-  }
+  if (successEl) successEl.style.display = 'flex'
 
   const idEl = document.getElementById('order-confirmation-id')
   const emailEl = document.getElementById('order-confirmation-email')

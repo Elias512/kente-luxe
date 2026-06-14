@@ -143,3 +143,6 @@ vite.config.ts.timestamp-*
 .vite/
 
 .DS_Store
+
+# Upload scripts (contains service role key)
+scripts/

@@ -308,7 +308,7 @@ async function openProductModal(productId) {
   modal.classList.add('loading')
 
   try {
-    const data = await apiFetch(`products?id=eq.${productId}&select=*`)
+    const data = await apiFetch(`products?id=eq.${productId}&select=id,name,price,region,occasion,fabric_type,stock,description,story,color_palette,care_instructions,category,gender,subcategory,image_url,bestseller,featured`)
     const product = data?.[0]
     if (!product) {
       modal.classList.remove('loading')
@@ -329,6 +329,20 @@ function renderModal(product) {
   const stock = product.stock || 0
 
   document.getElementById('modal-fabric-label').textContent = product.fabric_type || 'Product'
+
+  const modalImgContainer = document.querySelector('.product-modal-image')
+  const modalPlaceholder = document.getElementById('modal-img-placeholder')
+  if (modalImgContainer && modalPlaceholder) {
+    if (product.image_url) {
+      modalImgContainer.style.backgroundImage = `url(${product.image_url})`
+      modalImgContainer.style.backgroundSize = 'cover'
+      modalImgContainer.style.backgroundPosition = 'center'
+      modalPlaceholder.style.display = 'none'
+    } else {
+      modalImgContainer.style.backgroundImage = ''
+      modalPlaceholder.style.display = ''
+    }
+  }
   document.getElementById('modal-region').textContent = product.region || 'African Heritage'
   document.getElementById('modal-name').textContent = product.name
   document.getElementById('modal-price').textContent = `GHS ${(product.price || 0).toLocaleString()}`

@@ -42,12 +42,10 @@
     </div>
   </div>
   <div class="hero-right">
-    <div class="hero-img-placeholder">
-      <div class="kente-pattern-bg"></div>
-      <div class="hero-img-label">
-        <span class="hero-img-icon">KL</span>
-        <p>Hero image goes here</p>
-      </div>
+    <div class="hero-carousel">
+      <div class="hero-carousel-slide active" style="background-image: url('https://csajcdvwmmumhpuzpmuk.supabase.co/storage/v1/object/public/lookbook/hero-index-model-a.png');"></div>
+      <div class="hero-carousel-slide" style="background-image: url('https://csajcdvwmmumhpuzpmuk.supabase.co/storage/v1/object/public/lookbook/hero-index-model-b.png');"></div>
+      <div class="hero-carousel-slide" style="background-image: url('https://csajcdvwmmumhpuzpmuk.supabase.co/storage/v1/object/public/lookbook/hero-index-model-c.png');"></div>
     </div>
     <div class="hero-badge">
       <p>Featured Collection</p>
@@ -100,14 +98,7 @@
 
 <!-- STORY SECTION -->
 <section class="story-section" id="story">
-  <div class="story-img">
-    <div class="kente-pattern-bg"></div>
-    <div class="story-img-content">
-      <div class="story-stripe"></div>
-      <div class="story-stripe" style="width:60%; opacity:0.6;"></div>
-      <div class="story-stripe" style="width:40%; opacity:0.3;"></div>
-    </div>
-  </div>
+  <div class="story-img" style="background-image: url('https://csajcdvwmmumhpuzpmuk.supabase.co/storage/v1/object/public/lookbook/site-story-index-weaver-hands.png'); background-size: cover; background-position: center;"></div>
   <div class="story-content">
     <div class="section-label">Our Story</div>
     <blockquote class="story-quote">"Every thread tells a story. Every pattern carries a <em>legacy.</em>"</blockquote>
@@ -200,6 +191,17 @@
     })
   }
   
+  // Hero image carousel (crossfade)
+  const slides = document.querySelectorAll('.hero-carousel-slide')
+  let currentSlide = 0
+  if (slides.length > 1) {
+    setInterval(() => {
+      slides.forEach(s => s.classList.remove('active'))
+      currentSlide = (currentSlide + 1) % slides.length
+      slides[currentSlide].classList.add('active')
+    }, 8000)
+  }
+
   // Render featured products and init cart
   renderFeaturedProducts()
   initNavbarCart()
