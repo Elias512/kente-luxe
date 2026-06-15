@@ -145,9 +145,77 @@
         </div>
       </div>
 
-      <div class="checkout-payment-info">
-        <h4>Payment</h4>
-        <p>Payment integration will be available in a future release. Your order will be confirmed via email, and our team will reach out to complete payment.</p>
+      <div class="checkout-payment-section">
+        <div class="checkout-form-header">
+          <h3>Payment Method</h3>
+        </div>
+
+        <div class="payment-methods" id="payment-methods">
+          <label class="payment-method-card" data-payment="mobile_money">
+            <input type="radio" name="payment_method" value="mobile_money" class="payment-method-radio" checked>
+            <div class="payment-method-content">
+              <span class="payment-method-icon">📱</span>
+              <span class="payment-method-label">Mobile Money</span>
+              <span class="payment-method-sub">MTN · Telecel · AirtelTigo</span>
+            </div>
+          </label>
+          <label class="payment-method-card" data-payment="visa">
+            <input type="radio" name="payment_method" value="visa" class="payment-method-radio">
+            <div class="payment-method-content">
+              <span class="payment-method-icon">💳</span>
+              <span class="payment-method-label">Visa Card</span>
+              <span class="payment-method-sub">Credit or Debit Card</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="payment-form" id="payment-form-mobile" style="display: none;">
+          <div class="form-group">
+            <label class="form-label" for="mobile_network">Mobile Network <span class="form-required">*</span></label>
+            <select id="mobile_network" name="mobile_network" class="form-select">
+              <option value="">Select network</option>
+              <option value="MTN">MTN Ghana</option>
+              <option value="Telecel">Telecel Cash</option>
+              <option value="AirtelTigo">AirtelTigo Money</option>
+            </select>
+            <div class="form-error" style="display: none;"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="mobile_phone">Phone Number <span class="form-required">*</span></label>
+            <input type="tel" id="mobile_phone" name="mobile_phone" class="form-input" placeholder="e.g. 054 XXX XXXX">
+            <div class="form-error" style="display: none;"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="mobile_pin">Mobile Money PIN</label>
+            <input type="password" id="mobile_pin" name="mobile_pin" class="form-input" placeholder="****" maxlength="4" inputmode="numeric">
+            <p class="form-hint">For demo purposes, any 4-digit PIN works</p>
+          </div>
+        </div>
+
+        <div class="payment-form" id="payment-form-visa" style="display: none;">
+          <div class="form-group">
+            <label class="form-label" for="card_name">Cardholder Name <span class="form-required">*</span></label>
+            <input type="text" id="card_name" name="card_name" class="form-input" placeholder="Name on card">
+            <div class="form-error" style="display: none;"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="card_number">Card Number <span class="form-required">*</span></label>
+            <input type="text" id="card_number" name="card_number" class="form-input" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" inputmode="numeric">
+            <div class="form-error" style="display: none;"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="card_expiry">Expiry Date <span class="form-required">*</span></label>
+              <input type="text" id="card_expiry" name="card_expiry" class="form-input" placeholder="MM/YY" maxlength="5">
+              <div class="form-error" style="display: none;"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="card_cvv">CVV <span class="form-required">*</span></label>
+              <input type="text" id="card_cvv" name="card_cvv" class="form-input" placeholder="***" maxlength="4" inputmode="numeric">
+              <div class="form-error" style="display: none;"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="checkout-form-error" id="checkout-form-error" style="display: none;"></div>
@@ -159,13 +227,22 @@
     </form>
   </div>
 
+  <!-- PROCESSING -->
+  <div class="checkout-processing" id="checkout-processing" style="display: none;">
+    <div class="checkout-processing-inner">
+      <div class="checkout-processing-spinner"></div>
+      <h3>Processing Payment</h3>
+      <p>Please do not close this page</p>
+    </div>
+  </div>
+
   <!-- SUCCESS -->
   <div class="checkout-success" id="checkout-success" style="display: none;">
     <div class="checkout-success-icon">✓</div>
     <h2>Order Confirmed!</h2>
     <p>Thank you for your order. We'll send a confirmation to <strong id="order-confirmation-email">your email</strong>.</p>
     <p class="checkout-success-id">Order Reference: <span id="order-confirmation-id">Confirmed</span></p>
-    <p class="checkout-success-text">Our team will review your order and contact you within 24–48 hours to arrange payment and delivery.</p>
+    <p class="checkout-success-text">Your payment has been processed successfully. We'll send a confirmation to your email and contact you within 24–48 hours regarding delivery.</p>
     <a href="shop.html" class="btn-primary-kl">Continue Shopping</a>
   </div>
 

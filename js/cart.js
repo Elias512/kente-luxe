@@ -309,10 +309,13 @@ function createCartItemCard(item) {
     <div class="cart-item-card" data-item-id="${item.id}" data-product-id="${product.id}">
       <div class="cart-item-img">
         <div class="kente-pattern-bg"></div>
-        <div class="cart-item-img-label">
-          <span>KL</span>
-          <p>${product.fabric_type || 'Product'}</p>
-        </div>
+        ${product.image_url
+          ? `<img class="cart-item-img-src" src="${product.image_url}" alt="${product.name}" loading="lazy">`
+          : `<div class="cart-item-img-label">
+              <span>KL</span>
+              <p>${product.fabric_type || 'Product'}</p>
+            </div>`
+        }
       </div>
       <div class="cart-item-details">
         <div class="cart-item-header">
