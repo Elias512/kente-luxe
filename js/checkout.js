@@ -1,8 +1,18 @@
 import { apiFetch } from './cart.js'
+import { supabase } from './supabase.js'
 
 const TAX_RATE = 0.125
 const DELIVERY_FEE = 50
 let isSubmitting = false
+let currentUserId = null
+
+supabase.auth.getSession().then(({ data }) => {
+  currentUserId = data?.session?.user?.id || null
+})
+
+supabase.auth.onAuthStateChange((event, session) => {
+  currentUserId = session?.user?.id || null
+})
 
 function getGuestId() {
   let guestId = localStorage.getItem('kente_guest_id')
@@ -17,10 +27,18 @@ function getGuestId() {
   return guestId
 }
 
-async function fetchCartItems() {
+function cartFilter() {
   const guestId = getGuestId()
+  if (currentUserId) {
+    return `user_id=eq.${currentUserId}`
+  }
+  return `guest_id=eq.${guestId}`
+}
+
+async function fetchCartItems() {
+  const filter = cartFilter()
   const data = await apiFetch(
-    `cart_items?guest_id=eq.${guestId}&select=id,quantity,created_at,product_id&order=created_at.desc`
+    `cart_items?${filter}&select=id,quantity,created_at,product_id&order=created_at.desc`
   )
   if (!data || data.length === 0) return []
 
@@ -43,8 +61,8 @@ async function calcSubtotal() {
 }
 
 async function clearCart() {
-  const guestId = getGuestId()
-  await apiFetch(`cart_items?guest_id=eq.${guestId}`, { method: 'DELETE' })
+  const filter = cartFilter()
+  await apiFetch(`cart_items?${filter}`, { method: 'DELETE' })
 }
 
 async function validateCartStock() {
@@ -53,7 +71,7 @@ async function validateCartStock() {
   for (const item of items) {
     const stock = item.products?.stock || 0
     if (stock === 0) {
-      updates.push(apiFetch(`cart_items?id=eq.${item.id}&guest_id=eq.${getGuestId()}`, { method: 'DELETE' }))
+      updates.push(apiFetch(`cart_items?id=eq.${item.id}&${cartFilter()}`, { method: 'DELETE' }))
     } else if (item.quantity > stock) {
       updates.push(apiFetch(`cart_items?id=eq.${item.id}`, {
         method: 'PATCH',
@@ -65,12 +83,12 @@ async function validateCartStock() {
 }
 
 async function updateNavbarCartCount() {
-  const guestId = getGuestId()
+  const filter = cartFilter()
   try {
-    const data = await apiFetch(`cart_items?guest_id=eq.${guestId}&select=quantity`)
+    const data = await apiFetch(`cart_items?${filter}&select=quantity`)
     const count = (data || []).reduce((sum, item) => sum + item.quantity, 0)
     document.querySelectorAll('.cart-btn').forEach(btn => {
-      btn.textContent = `Cart (${count})`
+      btn.innerHTML = `Cart <span class="cart-count">${count}</span>`
     })
   } catch (e) {
     console.error('Error updating cart count:', e)
@@ -78,6 +96,13 @@ async function updateNavbarCartCount() {
 }
 
 export async function loadCheckout() {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    window.location.href = 'login.html?return=/checkout.html'
+    return
+  }
+  currentUserId = user.id
+
   const loadingEl = document.getElementById('checkout-loading')
   const summaryEl = document.getElementById('checkout-summary')
   const formEl = document.getElementById('checkout-form-section')
@@ -218,24 +243,42 @@ function setupFormSubmission() {
       const total = items.reduce((sum, item) => sum + (item.products?.price || 0) * item.quantity, 0)
       const paymentMethod = formData.get('payment_method')
 
-      const orderResult = await apiFetch('orders', {
-        method: 'POST',
-        body: JSON.stringify({
-          guest_id: getGuestId(),
-          user_id: null,
-          customer_name: formData.get('full_name'),
-          customer_email: formData.get('email'),
-          customer_phone: formData.get('phone'),
-          delivery_address: formData.get('address'),
-          delivery_city: formData.get('city'),
-          delivery_region: formData.get('region'),
-          notes: formData.get('notes') || '',
-          total,
-          status: 'pending',
-          payment_method: paymentMethod,
-          payment_status: 'paid'
+      const orderBody = {
+        guest_id: getGuestId(),
+        customer_name: formData.get('full_name'),
+        customer_email: formData.get('email'),
+        customer_phone: formData.get('phone'),
+        delivery_address: formData.get('address'),
+        delivery_city: formData.get('city'),
+        delivery_region: formData.get('region'),
+        notes: formData.get('notes') || '',
+        total,
+        status: 'pending',
+        payment_method: paymentMethod,
+        payment_status: 'paid'
+      }
+      if (currentUserId) {
+        orderBody.user_id = currentUserId
+      }
+
+      let orderResult
+      try {
+        orderResult = await apiFetch('orders', {
+          method: 'POST',
+          body: JSON.stringify(orderBody)
         })
-      })
+      } catch (err) {
+        // FK 409: user row missing, retry without user_id
+        if (err.message?.includes('23503')) {
+          delete orderBody.user_id
+          orderResult = await apiFetch('orders', {
+            method: 'POST',
+            body: JSON.stringify(orderBody)
+          })
+        } else {
+          throw err
+        }
+      }
 
       const orderId = orderResult?.[0]?.id || orderResult?.id
 
@@ -260,7 +303,7 @@ function setupFormSubmission() {
     } catch (error) {
       console.error('Order submission failed:', error)
       hideProcessing(processingEl)
-      showFormError('Something went wrong placing your order. Please try again.')
+      showFormError('Error: ' + (error.message || 'Something went wrong'))
       isSubmitting = false
       if (submitBtn) submitBtn.disabled = false
       if (spinner) spinner.style.display = 'none'

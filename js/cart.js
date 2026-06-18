@@ -2,21 +2,42 @@
 // DIRECT SUPABASE API (bypasses client auth issues)
 // ============================================
 
+import { supabase } from './supabase.js'
+
 const SUPABASE_URL = 'https://csajcdvwmmumhpuzpmuk.supabase.co'
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzYWpjZHZ3bW11bWhwdXpwbXVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjA3NjIsImV4cCI6MjA5NjMzNjc2Mn0.A1e_7yMdgm9Yfs4LoZvMH6MAGo_dtxTkRisePjOPl5k'
 
-const HEADERS = {
-  'apikey': SUPABASE_ANON_KEY,
-  'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-  'Content-Type': 'application/json',
-  'Prefer': 'return=representation'
+// Shared promise that resolves when the session is loaded
+const sessionReady = supabase.auth.getSession().then(({ data }) => {
+  authToken = data?.session?.access_token || null
+  currentUserId = data?.session?.user?.id || null
+})
+
+let authToken = null
+
+supabase.auth.onAuthStateChange((event, session) => {
+  authToken = session?.access_token || null
+  currentUserId = session?.user?.id || null
+  if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+    dispatchCartUpdate()
+  }
+})
+
+function getAuthHeaders() {
+  return {
+    'apikey': SUPABASE_ANON_KEY,
+    'Authorization': `Bearer ${authToken || SUPABASE_ANON_KEY}`,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation'
+  }
 }
 
 async function apiFetch(path, options = {}) {
   const url = `${SUPABASE_URL}/rest/v1/${path}`
+  const headers = await getAuthHeaders()
   const res = await fetch(url, {
     ...options,
-    headers: { ...HEADERS, ...options.headers }
+    headers: { ...headers, ...options.headers }
   })
 
   if (!res.ok) {
@@ -46,19 +67,35 @@ export function getGuestId() {
 }
 
 // ============================================
+// AUTH-AWARE CART FILTER
+// ============================================
+
+let currentUserId = null
+
+async function cartFilter() {
+  await sessionReady
+  const guestId = getGuestId()
+  if (currentUserId) {
+    return `user_id=eq.${currentUserId}`
+  }
+  return `guest_id=eq.${guestId}`
+}
+
+// ============================================
 // CART CRUD OPERATIONS
 // ============================================
 
-export { apiFetch, SUPABASE_URL, HEADERS }
+export { apiFetch, SUPABASE_URL }
 
 export async function addToCart(productId, quantity = 1) {
   try {
+    await sessionReady
     const guestId = getGuestId()
+    const idField = currentUserId ? 'user_id' : 'guest_id'
+    const idValue = currentUserId || guestId
 
-    // Check if item already in cart
     const existing = await apiFetch(
-      `cart_items?product_id=eq.${productId}&guest_id=eq.${guestId}&select=id,quantity`,
-      { method: 'GET' }
+      `cart_items?product_id=eq.${productId}&${idField}=eq.${idValue}&select=id,quantity`,
     )
 
     if (existing && existing.length > 0) {
@@ -72,13 +109,10 @@ export async function addToCart(productId, quantity = 1) {
         }
       )
     } else {
-      await apiFetch(
-        `cart_items`,
-        {
-          method: 'POST',
-          body: JSON.stringify({ guest_id: guestId, product_id: productId, quantity })
-        }
-      )
+      await apiFetch(`cart_items`, {
+        method: 'POST',
+        body: JSON.stringify({ [idField]: idValue, guest_id: guestId, product_id: productId, quantity })
+      })
     }
 
     dispatchCartUpdate()
@@ -91,10 +125,10 @@ export async function addToCart(productId, quantity = 1) {
 
 export async function getCartItems() {
   try {
-    const guestId = getGuestId()
+    const filter = await cartFilter()
 
     const data = await apiFetch(
-      `cart_items?guest_id=eq.${guestId}&select=id,quantity,created_at,product_id&order=created_at.desc`
+      `cart_items?${filter}&select=id,quantity,created_at,product_id&order=created_at.desc`
     )
 
     if (!data || data.length === 0) return []
@@ -124,10 +158,10 @@ export async function getCartItems() {
 
 export async function removeFromCart(itemId) {
   try {
-    const guestId = getGuestId()
+    const filter = await cartFilter()
 
     await apiFetch(
-      `cart_items?id=eq.${itemId}&guest_id=eq.${guestId}`,
+      `cart_items?id=eq.${itemId}&${filter}`,
       { method: 'DELETE' }
     )
 
@@ -145,8 +179,9 @@ export async function updateCartItemQuantity(itemId, quantity) {
       return await removeFromCart(itemId)
     }
 
+    const filter = await cartFilter()
     await apiFetch(
-      `cart_items?id=eq.${itemId}`,
+      `cart_items?id=eq.${itemId}&${filter}`,
       {
         method: 'PATCH',
         body: JSON.stringify({ quantity, updated_at: new Date().toISOString() })
@@ -163,10 +198,10 @@ export async function updateCartItemQuantity(itemId, quantity) {
 
 export async function clearCart() {
   try {
-    const guestId = getGuestId()
+    const filter = await cartFilter()
 
     await apiFetch(
-      `cart_items?guest_id=eq.${guestId}`,
+      `cart_items?${filter}`,
       { method: 'DELETE' }
     )
 
@@ -180,10 +215,10 @@ export async function clearCart() {
 
 export async function getCartCount() {
   try {
-    const guestId = getGuestId()
+    const filter = await cartFilter()
 
     const data = await apiFetch(
-      `cart_items?guest_id=eq.${guestId}&select=quantity`
+      `cart_items?${filter}&select=quantity`
     )
 
     return (data || []).reduce((sum, item) => sum + item.quantity, 0)
@@ -408,7 +443,7 @@ export async function updateNavbarCartCount() {
     const count = await getCartCount()
     const cartBtns = document.querySelectorAll('.cart-btn')
     cartBtns.forEach(btn => {
-      btn.textContent = `Cart (${count})`
+      btn.innerHTML = `Cart <span class="cart-count">${count}</span>`
     })
   } catch (error) {
     console.error('Error updating cart count:', error)
