@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://csajcdvwmmumhpuzpmuk.supabase.co">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>Orders - Admin - Kente Luxe</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="../css/style.css" rel="stylesheet">
+<style>
+.admin-section { max-width: 1100px; margin: 4rem auto; padding: 0 1.5rem; }
+.admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+.admin-loading { text-align: center; padding: 3rem 0; color: var(--muted); }
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.data-table th { text-align: left; padding: 0.75rem 0.5rem; color: var(--muted); font-weight: 400; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; border-bottom: 1px solid rgba(201, 168, 76, 0.15); white-space: nowrap; }
+.data-table td { padding: 0.75rem 0.5rem; border-bottom: 1px solid rgba(201, 168, 76, 0.06); color: var(--text); vertical-align: middle; }
+.data-table tr:hover { background: rgba(201, 168, 76, 0.03); }
+.data-table .status-select { background: transparent; border: 1px solid rgba(201, 168, 76, 0.2); color: var(--text); padding: 0.3rem 0.5rem; font-family: 'Jost', sans-serif; font-size: 0.8rem; cursor: pointer; }
+.data-table .status-select:focus { outline: none; border-color: var(--gold); }
+.data-table .status-select option { background: var(--dark-3); color: var(--text); }
+.order-detail-toggle { background: none; border: none; color: var(--gold); cursor: pointer; font-family: 'Jost', sans-serif; font-size: 0.78rem; padding: 0; }
+.order-detail-toggle:hover { text-decoration: underline; }
+.order-detail-row { display: none; }
+.order-detail-row.visible { display: table-row; }
+.order-detail-cell { padding: 1rem 0.5rem; background: var(--dark-3); }
+.order-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; max-width: 600px; }
+.order-detail-grid h4 { font-family: 'Cormorant Garamond', serif; color: var(--gold); font-size: 0.9rem; margin-bottom: 0.3rem; }
+.order-detail-grid p { font-size: 0.82rem; color: var(--text); margin-bottom: 0.15rem; }
+.status-update-msg { font-size: 0.75rem; margin-left: 0.5rem; }
+@media (max-width: 768px) { .data-table { font-size: 0.75rem; } .data-table th, .data-table td { padding: 0.5rem 0.3rem; } }
+</style>
+</head>
+<body>
+
+<div class="kente-line"></div>
+
+<nav>
+  <a href="../index.html" class="nav-logo">Kente <span>Luxe</span></a>
+  <ul class="nav-links">
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="orders.html" class="active">Orders</a></li>
+    <li><a href="products.html">Products</a></li>
+  </ul>
+  <div class="nav-actions">
+    <span id="admin-email-display" style="font-size:0.78rem;color:var(--muted);"></span>
+    <button class="btn-outline-kl" id="admin-signout-btn" style="padding:0.4rem 1rem;font-size:0.72rem;">Sign Out</button>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+</nav>
+
+<section class="admin-section">
+  <div class="admin-header">
+    <h1 class="section-title" style="margin-bottom:0;">Manage <em>Orders</em></h1>
+  </div>
+  <div id="orders-loading" class="admin-loading">Loading orders...</div>
+  <div id="orders-content" style="display:none;">
+    <div id="orders-total" style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem;"></div>
+    <div style="overflow-x:auto;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Customer</th>
+            <th>Date</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="orders-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<script type="module">
+  import { apiFetch } from '../js/cart.js'
+  import { requireManager, adminSignOut, formatCurrency, formatDate } from '../js/admin.js'
+
+  const navToggle = document.querySelector('.nav-toggle')
+  const navLinks = document.querySelector('.nav-links')
+  if (navToggle && navLinks) {
+    navToggle.addEventListener('click', () => navLinks.classList.toggle('open'))
+    document.addEventListener('click', (e) => { if (!e.target.closest('nav')) navLinks.classList.remove('open') })
+  }
+
+  const auth = await requireManager()
+  if (!auth) throw new Error('Not authorized')
+
+  document.getElementById('admin-email-display').textContent = auth.user.email
+  document.getElementById('admin-signout-btn').addEventListener('click', adminSignOut)
+
+  const loadingEl = document.getElementById('orders-loading')
+  const contentEl = document.getElementById('orders-content')
+  const tbody = document.getElementById('orders-tbody')
+
+  async function loadOrders() {
+    try {
+      const orders = await apiFetch(
+        `orders?select=id,created_at,total,status,customer_name,customer_email,customer_phone,delivery_address,delivery_city,delivery_region,payment_method,payment_status,user_id&order=created_at.desc`
+      )
+
+      if (!orders || orders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem 0;color:var(--muted);">No orders found.</td></tr>'
+        document.getElementById('orders-total').textContent = '0 orders'
+        return
+      }
+
+      document.getElementById('orders-total').textContent = `${orders.length} order${orders.length !== 1 ? 's' : ''}`
+
+      tbody.innerHTML = orders.map(o => `
+        <tr>
+          <td style="font-family:'Cormorant Garamond',serif;color:var(--cream);font-weight:600;">${o.id.slice(0, 8)}</td>
+          <td>
+            <div>${o.customer_name || '—'}</div>
+            <div style="font-size:0.75rem;color:var(--muted);">${o.customer_email || ''}</div>
+          </td>
+          <td style="white-space:nowrap;">${formatDate(o.created_at)}</td>
+          <td style="color:var(--gold);font-weight:500;">${formatCurrency(o.total)}</td>
+          <td>
+            <select class="status-select" data-order-id="${o.id}" data-current="${o.status}">
+              <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
+              <option value="confirmed" ${o.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+              <option value="shipped" ${o.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+              <option value="delivered" ${o.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+              <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+            </select>
+            <span class="status-update-msg" id="status-msg-${o.id}"></span>
+          </td>
+          <td>
+            <button class="order-detail-toggle" data-target="detail-${o.id}">Details ▸</button>
+          </td>
+        </tr>
+        <tr class="order-detail-row" id="detail-${o.id}">
+          <td colspan="6">
+            <div class="order-detail-cell">
+              <div class="order-detail-grid">
+                <div>
+                  <h4>Customer</h4>
+                  <p><strong>Name:</strong> ${o.customer_name || '—'}</p>
+                  <p><strong>Email:</strong> ${o.customer_email || '—'}</p>
+                  <p><strong>Phone:</strong> ${o.customer_phone || '—'}</p>
+                </div>
+                <div>
+                  <h4>Delivery</h4>
+                  <p><strong>Address:</strong> ${o.delivery_address || '—'}</p>
+                  <p><strong>City:</strong> ${o.delivery_city || '—'}</p>
+                  <p><strong>Region:</strong> ${o.delivery_region || '—'}</p>
+                </div>
+                <div>
+                  <h4>Payment</h4>
+                  <p><strong>Method:</strong> ${o.payment_method || '—'}</p>
+                  <p><strong>Status:</strong> ${o.payment_status || '—'}</p>
+                </div>
+                <div>
+                  <h4>Items</h4>
+                  <div id="items-${o.id}">Loading...</div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      `).join('')
+
+      document.querySelectorAll('.order-detail-toggle').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const targetId = btn.dataset.target
+          const row = document.getElementById(targetId)
+          const isVisible = row.classList.contains('visible')
+          row.classList.toggle('visible')
+          btn.textContent = isVisible ? 'Details ▸' : 'Details ▾'
+          if (!isVisible) {
+            const orderId = targetId.replace('detail-', '')
+            const itemsEl = document.getElementById(`items-${orderId}`)
+            if (itemsEl && !itemsEl.dataset.loaded) {
+              try {
+                const items = await apiFetch(`order_items?order_id=eq.${orderId}&select=quantity,price,products(name)`)
+                itemsEl.innerHTML = items && items.length
+                  ? items.map(i => `<p style="font-size:0.82rem;">${i.products?.name || 'Product'} x${i.quantity} — ${formatCurrency(i.price * i.quantity)}</p>`).join('')
+                  : '<p style="font-size:0.82rem;color:var(--muted);">No items</p>'
+                itemsEl.dataset.loaded = 'true'
+              } catch { itemsEl.innerHTML = '<p style="font-size:0.82rem;color:var(--muted);">Failed to load items</p>' }
+            }
+          }
+        })
+      })
+
+      document.querySelectorAll('.status-select').forEach(sel => {
+        sel.addEventListener('change', async () => {
+          const orderId = sel.dataset.orderId
+          const newStatus = sel.value
+          const msgEl = document.getElementById(`status-msg-${orderId}`)
+          try {
+            await apiFetch(`orders?id=eq.${orderId}`, {
+              method: 'PATCH',
+              body: JSON.stringify({ status: newStatus })
+            })
+            sel.dataset.current = newStatus
+            msgEl.textContent = '✓ Updated'
+            msgEl.style.color = '#81C784'
+            setTimeout(() => { msgEl.textContent = '' }, 3000)
+          } catch (err) {
+            sel.value = sel.dataset.current
+            msgEl.textContent = '✗ ' + (err.message || 'Failed')
+            msgEl.style.color = '#ef9a9a'
+            console.error('Status update failed:', err)
+          }
+        })
+      })
+
+      loadingEl.style.display = 'none'
+      contentEl.style.display = ''
+    } catch (e) {
+      loadingEl.textContent = 'Failed to load orders.'
+      console.error(e)
+    }
+  }
+
+  loadOrders()
+</script>
+
+</body>
+</html>

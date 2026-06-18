@@ -1,45 +1,8 @@
-import { apiFetch, getGuestId } from './cart.js'
+import { apiFetch, getGuestId, addToCart } from './cart.js'
 
 function getProductId() {
   const params = new URLSearchParams(window.location.search)
   return params.get('id')
-}
-
-function getGuestIdLocal() {
-  let guestId = localStorage.getItem('kente_guest_id')
-  if (!guestId) {
-    guestId = self.crypto?.randomUUID?.() ||
-      'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-        const r = Math.random() * 16 | 0
-        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16)
-      })
-    localStorage.setItem('kente_guest_id', guestId)
-  }
-  return guestId
-}
-
-async function addToCart(productId, quantity = 1) {
-  const guestId = getGuestIdLocal()
-
-  const existing = await apiFetch(
-    `cart_items?product_id=eq.${productId}&guest_id=eq.${guestId}&select=id,quantity`,
-    { method: 'GET' }
-  )
-
-  if (existing && existing.length > 0) {
-    await apiFetch(`cart_items?id=eq.${existing[0].id}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ quantity: existing[0].quantity + quantity, updated_at: new Date().toISOString() })
-    })
-  } else {
-    await apiFetch('cart_items', {
-      method: 'POST',
-      body: JSON.stringify({ guest_id: guestId, product_id: productId, quantity })
-    })
-  }
-
-  window.dispatchEvent(new CustomEvent('cartUpdated'))
-  return true
 }
 
 export async function loadProduct() {
@@ -172,21 +135,17 @@ function setupAddToCart(product) {
     if (spinner) spinner.style.display = 'inline-block'
     if (btnText) btnText.textContent = 'Adding...'
 
-    try {
-      await addToCart(product.id, qty)
+    const ok = await addToCart(product.id, qty)
+    if (ok) {
       if (btnText) btnText.textContent = 'Added ✓'
-      setTimeout(() => {
-        if (btnText) btnText.textContent = 'Add to Cart'
-        addBtn.disabled = false
-      }, 1500)
-    } catch (error) {
-      console.error('Add to cart failed:', error)
+    } else {
+      console.error('Add to cart failed')
       if (btnText) btnText.textContent = 'Failed'
-      setTimeout(() => {
-        if (btnText) btnText.textContent = 'Add to Cart'
-        addBtn.disabled = false
-      }, 1500)
     }
+    setTimeout(() => {
+      if (btnText) btnText.textContent = 'Add to Cart'
+      addBtn.disabled = false
+    }, 1500)
   })
 }
 

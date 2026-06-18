@@ -104,21 +104,47 @@ nav {
 }
 
 .cart-btn {
-  background: var(--gold);
-  color: var(--dark);
-  border: none;
-  padding: 0.5rem 1.2rem;
+  background: rgba(201, 168, 76, 0.12);
+  color: var(--gold);
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  padding: 0.45rem 1rem 0.45rem 0.85rem;
   font-family: 'Jost', sans-serif;
   font-size: 0.78rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  letter-spacing: 0.06em;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  line-height: 1;
 }
 
-.cart-btn:hover { 
-  background: var(--gold-light); 
+.cart-btn::before {
+  content: "🛒";
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.cart-btn:hover {
+  background: rgba(201, 168, 76, 0.2);
+  border-color: rgba(201, 168, 76, 0.5);
+  color: var(--gold-light);
+}
+
+.cart-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.3em;
+  height: 1.3em;
+  background: var(--gold);
+  color: var(--dark);
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 50%;
+  padding: 0 0.2em;
+  line-height: 1;
 }
 
 /* NAVIGATION TOGGLE (Hamburger) */
@@ -2237,6 +2263,289 @@ footer {
   color: #ffcdd2;
   font-size: 0.85rem;
   padding: 0.8rem 1rem;
+}
+
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+}
+
+.password-input-wrapper .form-input {
+  flex: 1;
+  padding-right: 4.5rem;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: none;
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-left: none;
+  color: var(--gold);
+  font-family: 'Jost', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.password-toggle:hover {
+  background: rgba(201, 168, 76, 0.1);
+}
+
+/* AUTH PAGES */
+.auth-section {
+  max-width: 440px;
+  margin: 4rem auto;
+  padding: 0 1.5rem;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin-top: 2rem;
+}
+
+.auth-form .form-error {
+  margin-top: 0;
+}
+
+.auth-submit {
+  width: 100%;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.auth-toggle-text {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.auth-toggle-link {
+  color: var(--gold);
+  text-decoration: none;
+}
+
+.auth-toggle-link:hover {
+  text-decoration: underline;
+}
+
+/* ACCOUNT PAGE */
+.account-section {
+  max-width: 720px;
+  margin: 4rem auto;
+  padding: 0 1.5rem;
+}
+
+.account-profile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--dark-2);
+  border: 1px solid rgba(201, 168, 76, 0.1);
+  padding: 1.5rem 2rem;
+  margin-top: 2rem;
+  gap: 1rem;
+}
+
+.account-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.account-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.account-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2rem;
+  color: var(--cream);
+  font-weight: 600;
+  margin: 0;
+}
+
+.account-email {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin: 0.1rem 0;
+}
+
+.account-role {
+  font-size: 0.72rem;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin: 0;
+}
+
+.account-orders-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3rem;
+  color: var(--cream);
+  margin: 2.5rem 0 1rem 0;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.1);
+}
+
+.account-orders {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.order-card {
+  background: var(--dark-2);
+  border: 1px solid rgba(201, 168, 76, 0.08);
+  padding: 1.2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.order-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-id {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  color: var(--cream);
+  font-weight: 600;
+}
+
+.order-status {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 0.25rem 0.75rem;
+}
+
+.order-status--pending {
+  background: rgba(201, 168, 76, 0.15);
+  color: var(--gold);
+}
+
+.order-status--confirmed {
+  background: rgba(76, 175, 80, 0.15);
+  color: #81C784;
+}
+
+.order-status--shipped {
+  background: rgba(33, 150, 243, 0.15);
+  color: #64B5F6;
+}
+
+.order-status--delivered {
+  background: rgba(76, 175, 80, 0.15);
+  color: #81C784;
+}
+
+.order-status--cancelled {
+  background: rgba(183, 28, 28, 0.15);
+  color: #ef9a9a;
+}
+
+.order-card-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-date {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.order-total {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.order-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--gold);
+  cursor: pointer;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.85rem;
+  padding: 0.25rem 0;
+  text-align: left;
+  width: fit-content;
+}
+.order-toggle-btn:hover {
+  text-decoration: underline;
+}
+
+.order-details {
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+  margin-top: 0.25rem;
+}
+.order-details-section {
+  margin-bottom: 1rem;
+}
+.order-details-section h4 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+}
+.order-details-section p {
+  font-size: 0.85rem;
+  color: var(--text);
+  margin-bottom: 0.2rem;
+  line-height: 1.5;
+}
+
+.order-item-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+}
+.order-item-row:last-child {
+  border-bottom: none;
+}
+.order-item-name {
+  flex: 1;
+  color: var(--text);
+}
+.order-item-qty {
+  color: var(--muted);
+  min-width: 2rem;
+}
+.order-item-price {
+  color: var(--cream);
+  font-weight: 500;
+  min-width: 5rem;
+  text-align: right;
 }
 
 .checkout-submit-btn {

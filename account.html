@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://csajcdvwmmumhpuzpmuk.supabase.co">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>My Account - Kente Luxe</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="kente-line"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">Kente <span>Luxe</span></a>
+  <ul class="nav-links">
+    <li><a href="shop.html">Shop</a></li>
+    <li><a href="lookbook.html">Lookbook</a></li>
+    <li><a href="custom-order.html">Custom Order</a></li>
+    <li><a href="our-story.html">Our Story</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="nav-login-link">Login</a>
+    <a href="cart.html" class="cart-btn">Cart <span class="cart-count">0</span></a>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+</nav>
+
+<!-- ACCOUNT SECTION -->
+<section class="account-section">
+  <h1 class="section-title">My <em>Account</em></h1>
+
+  <!-- LOADING STATE -->
+  <div id="account-loading" style="text-align:center;padding:3rem 0;">
+    <p style="color:var(--muted);">Loading your account...</p>
+  </div>
+
+  <!-- LOGIN PROMPT -->
+  <div id="account-login-prompt" style="display:none;text-align:center;padding:3rem 0;">
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--cream);margin-bottom:1rem;">Sign in to view your account</h2>
+    <p style="color:var(--muted);margin-bottom:2rem;">You need to be logged in to see your order history and profile.</p>
+    <a href="login.html" class="btn-primary-kl">Sign In</a>
+  </div>
+
+  <!-- ACCOUNT CONTENT -->
+  <div id="account-content" style="display:none;">
+
+    <!-- PROFILE SECTION -->
+    <div class="account-profile">
+      <div class="account-profile-header">
+        <div class="account-avatar">
+          <span id="account-avatar-letter">K</span>
+        </div>
+        <div>
+          <h2 class="account-name" id="account-name">—</h2>
+          <p class="account-email" id="account-email">—</p>
+          <p class="account-role" id="account-role">Customer</p>
+        </div>
+      </div>
+      <button class="btn-outline-kl" id="signout-btn">Sign Out</button>
+    </div>
+
+    <!-- ORDERS SECTION -->
+    <h3 class="account-orders-title">Order History</h3>
+    <div id="account-orders" class="account-orders">
+      <p style="color:var(--muted);text-align:center;padding:2rem 0;">No orders yet. <a href="shop.html" style="color:var(--gold);">Start shopping</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="index.html" class="nav-logo">Kente <span>Luxe</span></a>
+      <p>Premium African heritage fashion for the global stage. Wear your roots. Own your story.</p>
+      <div class="newsletter">
+        <input type="email" placeholder="Your email address">
+        <button>Subscribe</button>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Shop</h4>
+      <ul>
+        <li><a href="#">Women</a></li>
+        <li><a href="#">Men</a></li>
+        <li><a href="#">Accessories</a></li>
+        <li><a href="#">Custom Orders</a></li>
+        <li><a href="#">Lookbook</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Occasions</h4>
+      <ul>
+        <li><a href="#">Weddings</a></li>
+        <li><a href="#">Festivals</a></li>
+        <li><a href="#">Formal</a></li>
+        <li><a href="#">Casual</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="our-story.html">Our Story</a></li>
+        <li><a href="#">Heritage Points</a></li>
+        <li><a href="#">Shipping & Returns</a></li>
+        <li><a href="#">Contact Us</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="kente-line" style="margin-bottom:1.5rem;"></div>
+  <div class="footer-bottom">
+    <p>&copy; <span id="copyright-year"></span> Kente Luxe. All rights reserved.</p>
+    <script>document.getElementById('copyright-year').textContent = new Date().getFullYear()</script>
+    <p>Crafted with pride in Ghana &#x1F1EC;&#x1F1ED;</p>
+  </div>
+</footer>
+
+<script type="module">
+  import { getCurrentUser, signOut, initAuth, onAuthChange } from './js/auth.js'
+  import { apiFetch, initNavbarCart } from './js/cart.js'
+
+  const navToggle = document.querySelector('.nav-toggle')
+  const navLinks = document.querySelector('.nav-links')
+  if (navToggle && navLinks) {
+    navToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open')
+    })
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('nav')) {
+        navLinks.classList.remove('open')
+      }
+    })
+  }
+
+  const loadingEl = document.getElementById('account-loading')
+  const loginPromptEl = document.getElementById('account-login-prompt')
+  const contentEl = document.getElementById('account-content')
+  const nameEl = document.getElementById('account-name')
+  const emailEl = document.getElementById('account-email')
+  const roleEl = document.getElementById('account-role')
+  const avatarLetterEl = document.getElementById('account-avatar-letter')
+  const ordersEl = document.getElementById('account-orders')
+  const signoutBtn = document.getElementById('signout-btn')
+
+  async function loadAccount() {
+    const user = await getCurrentUser()
+    loadingEl.style.display = 'none'
+
+    if (!user) {
+      loginPromptEl.style.display = ''
+      return
+    }
+
+    contentEl.style.display = ''
+    const meta = user.user_metadata || {}
+    const fullName = meta.full_name || user.email
+    nameEl.textContent = fullName
+    emailEl.textContent = user.email
+    const role = meta.role || 'customer'
+    roleEl.textContent = role.charAt(0).toUpperCase() + role.slice(1)
+    avatarLetterEl.textContent = fullName.charAt(0).toUpperCase()
+
+    let orders
+    try {
+      orders = await apiFetch(
+        `orders?or=(user_id.eq.${user.id},customer_email.eq.${encodeURIComponent(user.email)})&select=id,created_at,total,status,customer_name,customer_email,customer_phone,delivery_address,delivery_city,delivery_region,payment_method,payment_status&order=created_at.desc`
+      )
+    } catch (e) {
+      console.error('Order fetch error:', e)
+      ordersEl.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem 0;">Could not load orders.</p>'
+      return
+    }
+
+    if (!orders || orders.length === 0) {
+      ordersEl.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem 0;">No orders yet. <a href="shop.html" style="color:var(--gold);">Start shopping</a></p>'
+      return
+    }
+
+    ordersEl.innerHTML = (await Promise.all(orders.map(async o => {
+      let itemsHtml = ''
+      try {
+        const items = await apiFetch(
+          `order_items?order_id=eq.${o.id}&select=quantity,price,products(name)`
+        )
+        if (items && items.length) {
+          itemsHtml = items.map(item => `
+            <div class="order-item-row">
+              <span class="order-item-name">${item.products?.name || 'Product'}</span>
+              <span class="order-item-qty">x${item.quantity}</span>
+              <span class="order-item-price">GHS ${(item.price * item.quantity).toLocaleString()}</span>
+            </div>
+          `).join('')
+        }
+      } catch {}
+
+      return `
+        <div class="order-card">
+          <div class="order-card-top">
+            <span class="order-id">#${o.id.slice(0, 8)}</span>
+            <span class="order-status order-status--${o.status}">${o.status}</span>
+          </div>
+          <div class="order-card-bottom">
+            <span class="order-date">${new Date(o.created_at).toLocaleDateString()}</span>
+            <span class="order-total">GHS ${Number(o.total).toLocaleString()}</span>
+          </div>
+          <button class="order-toggle-btn" data-order-id="${o.id}">View Details ▸</button>
+          <div class="order-details" id="order-details-${o.id}" style="display:none;">
+            <div class="order-details-section">
+              <h4>Delivery</h4>
+              <p><strong>Name:</strong> ${o.customer_name || '—'}</p>
+              <p><strong>Email:</strong> ${o.customer_email || '—'}</p>
+              <p><strong>Phone:</strong> ${o.customer_phone || '—'}</p>
+              <p><strong>Address:</strong> ${o.delivery_address || '—'}, ${o.delivery_city || '—'}, ${o.delivery_region || '—'}</p>
+            </div>
+            <div class="order-details-section">
+              <h4>Items</h4>
+              ${itemsHtml || '<p style="color:var(--muted);">No items found.</p>'}
+            </div>
+            <div class="order-details-section">
+              <h4>Payment</h4>
+              <p><strong>Method:</strong> ${o.payment_method || '—'}</p>
+              <p><strong>Status:</strong> ${o.payment_status || '—'}</p>
+            </div>
+          </div>
+        </div>
+      `
+    }))).join('')
+
+    document.querySelectorAll('.order-toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.orderId
+        const details = document.getElementById(`order-details-${id}`)
+        const isOpen = details.style.display !== 'none'
+        details.style.display = isOpen ? 'none' : 'block'
+        btn.textContent = isOpen ? 'View Details ▸' : 'Hide Details ▾'
+      })
+    })
+  }
+
+  signoutBtn.addEventListener('click', async () => {
+    await signOut()
+    window.location.href = 'login.html'
+  })
+
+  initNavbarCart()
+  initAuth()
+  loadAccount()
+</script>
+
+</body>
+</html>

@@ -3,10 +3,9 @@ import {
   fetchFilterOptions,
   renderShopProducts,
   getPriceRange,
-  attachCartListeners
 } from './products.js'
 
-import { apiFetch } from './cart.js'
+import { apiFetch, addToCart } from './cart.js'
 
 let currentFilters = {
   occasions: [],
@@ -188,13 +187,29 @@ function setupProductModal() {
 
   if (!grid || !modal) return
 
-  // Click product card to open modal
+  // Click on product card or add-to-cart button
   grid.addEventListener('click', async (e) => {
-    const card = e.target.closest('.product-card')
     const addBtn = e.target.closest('.add-to-cart')
+    if (addBtn) {
+      const productId = addBtn.dataset.productId
+      if (!productId) return
+      addBtn.disabled = true
+      const originalText = addBtn.textContent
+      const ok = await addToCart(productId, 1)
+      if (ok) {
+        addBtn.textContent = 'Added ✓'
+      } else {
+        addBtn.textContent = 'Failed'
+      }
+      setTimeout(() => {
+        addBtn.textContent = originalText
+        addBtn.disabled = false
+      }, 1500)
+      return
+    }
 
-    if (!card || addBtn) return
-
+    const card = e.target.closest('.product-card')
+    if (!card) return
     const productId = card.dataset.productId
     if (!productId) return
 
@@ -234,71 +249,34 @@ function setupProductModal() {
   }
 
   // Add to cart from modal
-  const addBtn = document.getElementById('modal-add-btn')
-  if (addBtn) {
-    addBtn.addEventListener('click', async () => {
-      const productId = addBtn.dataset.productId
+  const modalAddBtn = document.getElementById('modal-add-btn')
+  if (modalAddBtn) {
+    modalAddBtn.addEventListener('click', async () => {
+      const productId = modalAddBtn.dataset.productId
       if (!productId) return
 
       const qty = parseInt(qtyInput?.value) || 1
       const spinner = document.getElementById('modal-add-spinner')
       const text = document.getElementById('modal-add-text')
 
-      addBtn.disabled = true
+      modalAddBtn.disabled = true
       if (spinner) spinner.style.display = 'inline-block'
       if (text) text.textContent = 'Adding...'
 
-      try {
-        const guestId = getGuestIdLocal()
-        const existing = await apiFetch(
-          `cart_items?product_id=eq.${productId}&guest_id=eq.${guestId}&select=id,quantity`,
-          { method: 'GET' }
-        )
-
-        if (existing && existing.length > 0) {
-          await apiFetch(`cart_items?id=eq.${existing[0].id}`, {
-            method: 'PATCH',
-            body: JSON.stringify({ quantity: existing[0].quantity + qty, updated_at: new Date().toISOString() })
-          })
-        } else {
-          await apiFetch('cart_items', {
-            method: 'POST',
-            body: JSON.stringify({ guest_id: guestId, product_id: productId, quantity: qty })
-          })
-        }
-
-        window.dispatchEvent(new CustomEvent('cartUpdated'))
-
+      const ok = await addToCart(productId, qty)
+      if (ok) {
         if (text) text.textContent = 'Added ✓'
-        setTimeout(() => {
-          if (text) text.textContent = 'Add to Cart'
-          addBtn.disabled = false
-          if (spinner) spinner.style.display = 'none'
-        }, 1500)
-      } catch (error) {
-        console.error('Add to cart failed:', error)
+      } else {
+        console.error('Add to cart failed')
         if (text) text.textContent = 'Failed'
-        setTimeout(() => {
-          if (text) text.textContent = 'Add to Cart'
-          addBtn.disabled = false
-          if (spinner) spinner.style.display = 'none'
-        }, 1500)
       }
+      setTimeout(() => {
+        if (text) text.textContent = 'Add to Cart'
+        modalAddBtn.disabled = false
+        if (spinner) spinner.style.display = 'none'
+      }, 1500)
     })
   }
-}
-
-function getGuestIdLocal() {
-  let guestId = localStorage.getItem('kente_guest_id')
-  if (!guestId) {
-    guestId = self.crypto?.randomUUID?.() ||
-      'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-        const r = Math.random() * 16 | 0
-        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16)
-      })
-    localStorage.setItem('kente_guest_id', guestId)
-  }
-  return guestId
 }
 
 async function openProductModal(productId) {

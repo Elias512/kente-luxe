@@ -42,7 +42,8 @@ export async function fetchAllProducts(filters = {}, sortBy = 'newest', page = 1
 
     // Apply filters
     if (filters.occasions && filters.occasions.length > 0) {
-      query = query.overlaps('occasion', filters.occasions)
+      const orConditions = filters.occasions.map(o => `occasion.ilike.*${o}*`).join(',')
+      query = query.or(orConditions)
     }
 
     if (filters.fabric_types && filters.fabric_types.length > 0) {
@@ -133,8 +134,11 @@ export async function fetchFilterOptions() {
       return { occasions: [], fabricTypes: [], regions: [], genders: [] }
     }
 
-    // Extract unique values
-    const occasions = [...new Set(data.flatMap(p => p.occasion || []))].filter(Boolean)
+    // Extract unique values (occasion is text, parse comma-separated)
+    const occasions = [...new Set(data.flatMap(p => {
+      if (!p.occasion) return []
+      return p.occasion.replace(/[{}]/g, '').split(',').map(s => s.trim()).filter(Boolean)
+    }))]
     const fabricTypes = [...new Set(data.map(p => p.fabric_type).filter(Boolean))]
     const regions = [...new Set(data.map(p => p.region).filter(Boolean))]
     const genders = [...new Set(data.map(p => p.gender).filter(Boolean))]
@@ -257,10 +261,6 @@ export async function renderShopProducts(filters = {}, sortBy = 'newest', page =
 
   container.innerHTML = products.map(product => createProductCard(product)).join('')
 
-  // Add event listeners to "Add to Cart" buttons
-  attachCartListeners(container)
-
-  // Return pagination info
   return { total, page, perPage }
 }
 
