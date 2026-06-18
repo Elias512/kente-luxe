@@ -43,9 +43,14 @@
     <li><a href="dashboard.html">Dashboard</a></li>
     <li><a href="orders.html">Orders</a></li>
     <li><a href="products.html" class="active">Products</a></li>
+    <li><a href="customers.html">Customers</a></li>
+    <li><a href="reviews.html">Reviews</a></li>
+    <li><a href="analytics.html">Analytics</a></li>
   </ul>
   <div class="nav-actions">
     <span id="admin-email-display" style="font-size:0.78rem;color:var(--muted);"></span>
+    <a href="profile.html" style="font-size:0.78rem;color:var(--gold);text-decoration:none;margin-right:0.8rem;">Profile</a>
+    <button class="btn-outline-kl" id="admin-signout-btn" style="padding:0.4rem 1rem;font-size:0.72rem;">Sign Out</button>
     <button class="btn-outline-kl" id="admin-signout-btn" style="padding:0.4rem 1rem;font-size:0.72rem;">Sign Out</button>
   </div>
   <button class="nav-toggle" aria-label="Toggle menu">☰</button>
@@ -320,7 +325,7 @@
             ${p.description ? `<div style="font-size:0.75rem;color:var(--muted);max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.description}</div>` : ''}
           </td>
           <td style="color:var(--gold);font-weight:500;">${formatCurrency(p.price)}</td>
-          <td><span style="color:${p.stock > 0 ? 'var(--text)' : '#ef9a9a'}">${p.stock}</span></td>
+          <td><span style="color:${p.stock <= 0 ? '#E74C3C' : p.stock < 5 ? '#E67E22' : 'var(--text)'}">${p.stock}</span></td>
           <td style="color:var(--muted);">${p.region || '—'}</td>
           <td>
             <button class="btn-outline-kl btn-sm edit-product" data-id="${p.id}" style="margin-right:0.4rem;">Edit</button>
@@ -347,6 +352,15 @@
 
   loadProducts()
 </script>
+
+<footer>
+  <div class="kente-line" style="margin-bottom:1.5rem;"></div>
+  <div class="footer-bottom" style="padding:0 1.5rem 1.5rem;">
+    <p>&copy; <span id="copyright-year"></span> Kente Luxe. All rights reserved.</p>
+    <script>document.getElementById('copyright-year').textContent = new Date().getFullYear()</script>
+    <p>Crafted with pride in Ghana &#x1F1EC;&#x1F1ED;</p>
+  </div>
+</footer>
 
 </body>
 </html>

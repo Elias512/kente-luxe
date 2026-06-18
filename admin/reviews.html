@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://csajcdvwmmumhpuzpmuk.supabase.co">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>Reviews - Kente Luxe Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="../css/style.css" rel="stylesheet">
+<style>
+.admin-section { max-width: 1100px; margin: 4rem auto; padding: 0 1.5rem; }
+.admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+.admin-loading { text-align: center; padding: 3rem 0; color: var(--muted); }
+.review-card { background: var(--dark-2); border: 1px solid rgba(201,168,76,0.08); padding: 1.5rem; margin-bottom: 1rem; }
+.review-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; }
+.review-product { font-family: 'Cormorant Garamond', serif; font-size: 1rem; color: var(--cream); }
+.review-stars { color: var(--gold); font-size: 0.85rem; letter-spacing: 1px; margin-top: 0.2rem; }
+.review-meta { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.8rem; }
+.review-body { font-size: 0.85rem; color: var(--text); line-height: 1.6; margin-bottom: 1rem; padding: 0.8rem; background: rgba(201,168,76,0.03); border-left: 2px solid rgba(201,168,76,0.15); }
+.review-actions { display: flex; gap: 0.75rem; }
+.btn-approve { padding: 0.5rem 1.2rem; background: #27AE60; color: #fff; border: none; font-family: 'Jost', sans-serif; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; }
+.btn-approve:hover { opacity: 0.9; }
+.btn-approve:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-reject { padding: 0.5rem 1.2rem; background: #E74C3C; color: #fff; border: none; font-family: 'Jost', sans-serif; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; }
+.btn-reject:hover { opacity: 0.9; }
+.btn-reject:disabled { opacity: 0.4; cursor: not-allowed; }
+.review-empty { text-align: center; padding: 3rem 0; color: var(--muted); }
+.review-msg { font-size: 0.78rem; margin-top: 0.5rem; }
+.review-msg.success { color: #27AE60; }
+.review-msg.error { color: #E74C3C; }
+</style>
+</head>
+<body>
+<div class="kente-line"></div>
+<nav>
+  <a href="../index.html" class="nav-logo">Kente <span>Luxe</span></a>
+  <ul class="nav-links">
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="orders.html">Orders</a></li>
+    <li><a href="products.html">Products</a></li>
+    <li><a href="customers.html">Customers</a></li>
+    <li><a href="reviews.html" class="active">Reviews</a></li>
+    <li><a href="analytics.html">Analytics</a></li>
+  </ul>
+  <div class="nav-actions">
+    <span id="admin-email-display" style="font-size:0.78rem;color:var(--muted);"></span>
+    <a href="profile.html" style="font-size:0.78rem;color:var(--gold);text-decoration:none;margin-right:0.8rem;">Profile</a>
+    <button class="btn-outline-kl" id="admin-signout-btn" style="padding:0.4rem 1rem;font-size:0.72rem;">Sign Out</button>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+</nav>
+<section class="admin-section">
+  <div class="admin-header">
+    <h1 class="section-title" style="margin-bottom:0;">Pending <em>Reviews</em></h1>
+  </div>
+  <div id="reviews-loading" class="admin-loading">Loading reviews...</div>
+  <div id="reviews-content" style="display:none;"></div>
+</section>
+<footer>
+  <div class="kente-line" style="margin-bottom:1.5rem;"></div>
+  <div class="footer-bottom" style="padding:0 1.5rem 1.5rem;">
+    <p>&copy; <span id="copyright-year"></span> Kente Luxe. All rights reserved.</p>
+    <script>document.getElementById('copyright-year').textContent = new Date().getFullYear()</script>
+    <p>Crafted with pride in Ghana &#x1F1EC;&#x1F1ED;</p>
+  </div>
+</footer>
+<script type="module">
+  import { supabase } from '../js/supabase.js'
+  import { requireManager, adminSignOut } from '../js/admin.js'
+
+  const navToggle = document.querySelector('.nav-toggle')
+  const navLinks = document.querySelector('.nav-links')
+  if (navToggle && navLinks) {
+    navToggle.addEventListener('click', () => navLinks.classList.toggle('open'))
+    document.addEventListener('click', (e) => { if (!e.target.closest('nav')) navLinks.classList.remove('open') })
+  }
+
+  const auth = await requireManager()
+  if (!auth) throw new Error('Not authorized')
+
+  document.getElementById('admin-email-display').textContent = auth.user.email
+  document.getElementById('admin-signout-btn').addEventListener('click', adminSignOut)
+
+  const loadingEl = document.getElementById('reviews-loading')
+  const contentEl = document.getElementById('reviews-content')
+
+  function renderStars(rating) {
+    return '★'.repeat(rating) + '☆'.repeat(5 - rating)
+  }
+
+  async function loadPendingReviews() {
+    loadingEl.style.display = ''
+    contentEl.style.display = 'none'
+
+    try {
+      const { data, error } = await supabase.rpc('get_pending_reviews')
+
+      if (error) throw error
+
+      if (!data || data.length === 0) {
+        contentEl.innerHTML = '<div class="review-empty">No pending reviews.</div>'
+        loadingEl.style.display = 'none'
+        contentEl.style.display = ''
+        return
+      }
+
+      contentEl.innerHTML = data.map(r => `
+        <div class="review-card" id="review-card-${r.id}">
+          <div class="review-card-top">
+            <div>
+              <div class="review-product">${escapeHtml(r.product_name)}</div>
+              <div class="review-stars">${renderStars(r.rating)}</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="review-meta">${escapeHtml(r.user_name)}</div>
+              <div class="review-meta">${new Date(r.created_at).toLocaleDateString()}</div>
+            </div>
+          </div>
+          <div class="review-body">${escapeHtml(r.body)}</div>
+          <div class="review-actions">
+            <button class="btn-approve" data-id="${r.id}">Approve</button>
+            <button class="btn-reject" data-id="${r.id}">Reject</button>
+          </div>
+          <div id="review-msg-${r.id}" class="review-msg"></div>
+        </div>
+      `).join('')
+
+      // Attach approve/reject handlers
+      contentEl.querySelectorAll('.btn-approve').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.id
+          btn.disabled = true
+          const msgEl = document.getElementById(`review-msg-${id}`)
+          msgEl.textContent = 'Approving...'
+          msgEl.className = 'review-msg'
+          const { error } = await supabase.rpc('approve_review', { p_review_id: id })
+          if (error) {
+            msgEl.textContent = 'Error: ' + error.message
+            msgEl.className = 'review-msg error'
+            btn.disabled = false
+          } else {
+            msgEl.textContent = 'Approved!'
+            msgEl.className = 'review-msg success'
+            const card = document.getElementById(`review-card-${id}`)
+            card.style.opacity = '0.4'
+            btn.disabled = true
+            btn.nextElementSibling.disabled = true
+          }
+        })
+      })
+
+      contentEl.querySelectorAll('.btn-reject').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.id
+          btn.disabled = true
+          const msgEl = document.getElementById(`review-msg-${id}`)
+          msgEl.textContent = 'Rejecting...'
+          msgEl.className = 'review-msg'
+          const { error } = await supabase.rpc('reject_review', { p_review_id: id })
+          if (error) {
+            msgEl.textContent = 'Error: ' + error.message
+            msgEl.className = 'review-msg error'
+            btn.disabled = false
+          } else {
+            msgEl.textContent = 'Rejected'
+            msgEl.className = 'review-msg'
+            const card = document.getElementById(`review-card-${id}`)
+            card.style.opacity = '0.4'
+            btn.disabled = true
+            btn.previousElementSibling.disabled = true
+          }
+        })
+      })
+
+      loadingEl.style.display = 'none'
+      contentEl.style.display = ''
+    } catch (e) {
+      loadingEl.textContent = 'Failed to load reviews.'
+      console.error(e)
+    }
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div')
+    div.textContent = str
+    return div.innerHTML
+  }
+
+  loadPendingReviews()
+</script>
+</body>
+</html>

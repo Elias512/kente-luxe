@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://csajcdvwmmumhpuzpmuk.supabase.co">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>Customers - Kente Luxe Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="../css/style.css" rel="stylesheet">
+<style>
+.admin-section { max-width: 1100px; margin: 4rem auto; padding: 0 1.5rem; }
+.admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+.admin-loading { text-align: center; padding: 3rem 0; color: var(--muted); }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; font-family: 'Jost', sans-serif; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); padding: 0.8rem 0.6rem; border-bottom: 1px solid var(--cream-faded); }
+td { padding: 0.8rem 0.6rem; font-size: 0.85rem; color: var(--text); border-bottom: 1px solid rgba(201,168,76,0.08); }
+tr:hover td { background: rgba(201,168,76,0.03); }
+.customer-name { color: var(--cream); font-weight: 500; }
+.customer-email { font-size: 0.78rem; color: var(--muted); }
+.badge { display: inline-block; padding: 0.15rem 0.5rem; font-size: 0.72rem; background: var(--dark-2); border: 1px solid var(--cream-faded); color: var(--text); }
+.search-bar { margin-bottom: 1.5rem; display: flex; gap: 0.8rem; }
+.search-bar input { flex: 1; max-width: 320px; padding: 0.6rem 0.8rem; background: transparent; border: 1px solid var(--cream-faded); color: var(--cream); font-family: 'Jost', sans-serif; font-size: 0.85rem; }
+.search-bar input:focus { outline: none; border-color: var(--gold); }
+.search-bar input::placeholder { color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="kente-line"></div>
+<nav>
+  <a href="../index.html" class="nav-logo">Kente <span>Luxe</span></a>
+  <ul class="nav-links">
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="orders.html">Orders</a></li>
+    <li><a href="products.html">Products</a></li>
+    <li><a href="customers.html" class="active">Customers</a></li>
+    <li><a href="reviews.html">Reviews</a></li>
+    <li><a href="analytics.html">Analytics</a></li>
+  </ul>
+  <div class="nav-actions">
+    <span id="admin-email-display" style="font-size:0.78rem;color:var(--muted);"></span>
+    <a href="profile.html" style="font-size:0.78rem;color:var(--gold);text-decoration:none;margin-right:0.8rem;">Profile</a>
+    <button class="btn-outline-kl" id="admin-signout-btn" style="padding:0.4rem 1rem;font-size:0.72rem;">Sign Out</button>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+</nav>
+<section class="admin-section">
+  <div class="admin-header">
+    <h1 class="section-title" style="margin-bottom:0;">Customers</h1>
+  </div>
+  <div class="search-bar">
+    <input type="text" id="customer-search" placeholder="Search by name or email...">
+  </div>
+  <div id="customers-loading" class="admin-loading">Loading customers...</div>
+  <div id="customers-content" style="display:none;">
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem;">Total: <span id="customers-total">0</span></p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Orders</th>
+            <th>Total Spent</th>
+            <th>First Order</th>
+            <th>Last Order</th>
+          </tr>
+        </thead>
+        <tbody id="customers-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<footer>
+  <div class="kente-line" style="margin-bottom:1.5rem;"></div>
+  <div class="footer-bottom" style="padding:0 1.5rem 1.5rem;">
+    <p>&copy; <span id="copyright-year"></span> Kente Luxe. All rights reserved.</p>
+    <script>document.getElementById('copyright-year').textContent = new Date().getFullYear()</script>
+    <p>Crafted with pride in Ghana &#x1F1EC;&#x1F1ED;</p>
+  </div>
+</footer>
+<script type="module">
+  import { supabase } from '../js/supabase.js'
+  import { apiFetch } from '../js/cart.js'
+  import { requireManager, adminSignOut, formatCurrency, formatDate } from '../js/admin.js'
+
+  await requireManager()
+  document.getElementById('admin-signout-btn').addEventListener('click', adminSignOut)
+
+  const tbody = document.getElementById('customers-tbody')
+  const loadingEl = document.getElementById('customers-loading')
+  const contentEl = document.getElementById('customers-content')
+
+  async function loadCustomers(search = '') {
+    loadingEl.style.display = ''
+    contentEl.style.display = 'none'
+
+    try {
+      const orders = await apiFetch(
+        'orders?select=customer_email,customer_name,total,created_at&order=created_at.desc'
+      )
+
+      // Group by email
+      const map = {}
+      for (const o of orders || []) {
+        if (!o.customer_email) continue
+        if (!map[o.customer_email]) {
+          map[o.customer_email] = {
+            email: o.customer_email,
+            customer_name: o.customer_name,
+            total_orders: 0,
+            total_spent: 0,
+            first_order: o.created_at,
+            last_order: o.created_at,
+          }
+        }
+        map[o.customer_email].total_orders++
+        map[o.customer_email].total_spent += Number(o.total || 0)
+        if (o.created_at < map[o.customer_email].first_order) map[o.customer_email].first_order = o.created_at
+        if (o.created_at > map[o.customer_email].last_order) map[o.customer_email].last_order = o.created_at
+      }
+
+      const customers = Object.values(map).sort((a, b) => b.total_spent - a.total_spent)
+
+      const filtered = search
+        ? customers.filter(c =>
+            (c.customer_name || '').toLowerCase().includes(search) ||
+            (c.email || '').toLowerCase().includes(search)
+          )
+        : customers
+
+      document.getElementById('customers-total').textContent = filtered.length
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:2rem 0;">No customers found.</td></tr>'
+      } else {
+        tbody.innerHTML = filtered.map(c => `
+          <tr>
+            <td>
+              <div class="customer-name">${c.customer_name || '—'}</div>
+              <div class="customer-email">${c.email}</div>
+            </td>
+            <td><span class="badge">${c.total_orders}</span></td>
+            <td>${formatCurrency(c.total_spent || 0)}</td>
+            <td>${formatDate(c.first_order)}</td>
+            <td>${formatDate(c.last_order)}</td>
+          </tr>
+        `).join('')
+      }
+
+      loadingEl.style.display = 'none'
+      contentEl.style.display = ''
+    } catch (e) {
+      loadingEl.textContent = 'Failed to load customers.'
+      console.error(e)
+    }
+  }
+
+  document.getElementById('customer-search').addEventListener('input', e => {
+    loadCustomers(e.target.value.toLowerCase().trim())
+  })
+
+  loadCustomers()
+</script>
+</body>
+</html>

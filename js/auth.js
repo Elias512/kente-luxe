@@ -57,7 +57,10 @@ export async function getSession() {
 
 export async function getCurrentUser() {
   const { data, error } = await supabase.auth.getUser()
-  if (error) return null
+  if (error) {
+    await supabase.auth.signOut().catch(() => {})
+    return null
+  }
   return data.user
 }
 

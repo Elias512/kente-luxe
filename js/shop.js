@@ -6,6 +6,7 @@ import {
 } from './products.js'
 
 import { apiFetch, addToCart } from './cart.js'
+import { supabase } from './supabase.js'
 
 let currentFilters = {
   occasions: [],
@@ -391,6 +392,8 @@ function renderModal(product) {
   if (product.bestseller) badge.textContent = 'Bestseller'
   else if (product.featured) badge.textContent = 'Featured'
   else badge.style.display = 'none'
+
+  loadReviews(product.id)
 }
 
 // ============================================
@@ -443,6 +446,158 @@ function clearAllFilters() {
   currentSort = 'newest'
   currentPage = 1
   loadProducts()
+}
+
+// ============================================
+// REVIEWS
+// ============================================
+
+let currentReviewProductId = null
+
+function renderStars(rating) {
+  const full = '★'.repeat(Math.floor(rating))
+  const half = rating % 1 >= 0.5 ? '★' : ''
+  const empty = '☆'.repeat(5 - Math.ceil(rating))
+  return full + half + empty
+}
+
+async function loadReviews(productId) {
+  currentReviewProductId = productId
+  const summaryEl = document.getElementById('reviews-summary')
+  const listEl = document.getElementById('reviews-list')
+  const writeBtn = document.getElementById('btn-write-review')
+
+  // Load rating summary
+  try {
+    const { data: ratingData } = await supabase.rpc('get_product_rating', {
+      p_product_id: productId
+    })
+    if (ratingData && ratingData.count > 0) {
+      summaryEl.innerHTML = `
+        <span class="reviews-summary-stars">${renderStars(ratingData.average)}</span>
+        <span class="reviews-summary-avg">${ratingData.average}</span>
+        <span class="reviews-summary-count">(${ratingData.count} review${ratingData.count !== 1 ? 's' : ''})</span>
+      `
+    } else {
+      summaryEl.innerHTML = '<span class="reviews-summary-count">No reviews yet</span>'
+    }
+  } catch (e) {
+    console.error('Error loading rating:', e)
+    summaryEl.innerHTML = ''
+  }
+
+  // Load reviews
+  try {
+    const { data: reviews } = await supabase.rpc('get_product_reviews', {
+      p_product_id: productId
+    })
+    if (reviews && reviews.length > 0) {
+      listEl.innerHTML = reviews.map(r => `
+        <div class="review-card">
+          <div class="review-card-header">
+            <span class="review-card-stars">${renderStars(r.rating)}</span>
+            <span class="review-card-date">${new Date(r.created_at).toLocaleDateString()}</span>
+          </div>
+          <div class="review-card-body">${escapeHtml(r.body)}</div>
+          <div class="review-card-user">— ${escapeHtml(r.user_name || 'Anonymous')}</div>
+        </div>
+      `).join('')
+    } else {
+      listEl.innerHTML = '<div class="reviews-empty">No reviews yet. Be the first to review this product.</div>'
+    }
+  } catch (e) {
+    console.error('Error loading reviews:', e)
+    listEl.innerHTML = '<div class="reviews-empty">Could not load reviews.</div>'
+  }
+
+  // Check if user can review
+  writeBtn.style.display = 'none'
+  document.getElementById('review-form').style.display = 'none'
+  try {
+    const { data: canData } = await supabase.rpc('can_review_product', {
+      p_product_id: productId
+    })
+    if (canData && canData.can_review) {
+      writeBtn.style.display = ''
+    }
+  } catch (e) {
+    // Not logged in or other error — just hide the button
+  }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div')
+  div.textContent = str
+  return div.innerHTML
+}
+
+// Write Review button — set up once on page load
+const writeReviewBtn = document.getElementById('btn-write-review')
+const reviewFormEl = document.getElementById('review-form')
+const submitReviewBtn = document.getElementById('btn-submit-review')
+const reviewBodyEl = document.getElementById('review-body')
+const reviewMsgEl = document.getElementById('review-msg')
+
+if (writeReviewBtn && reviewFormEl) {
+  writeReviewBtn.addEventListener('click', () => {
+    writeReviewBtn.style.display = 'none'
+    reviewFormEl.style.display = ''
+    document.querySelectorAll('.star-rating input').forEach(r => r.checked = false)
+    reviewBodyEl.value = ''
+    reviewMsgEl.textContent = ''
+    reviewMsgEl.className = 'review-msg'
+  })
+
+  submitReviewBtn.addEventListener('click', async () => {
+    const rating = document.querySelector('.star-rating input:checked')
+    const body = reviewBodyEl.value.trim()
+
+    if (!rating) {
+      reviewMsgEl.textContent = 'Please select a star rating.'
+      reviewMsgEl.className = 'review-msg error'
+      return
+    }
+    if (!body) {
+      reviewMsgEl.textContent = 'Please write a review.'
+      reviewMsgEl.className = 'review-msg error'
+      return
+    }
+
+    submitReviewBtn.disabled = true
+    submitReviewBtn.textContent = 'Submitting...'
+    reviewMsgEl.textContent = ''
+    reviewMsgEl.className = 'review-msg'
+
+    try {
+      const { data, error } = await supabase.rpc('submit_review', {
+        p_product_id: currentReviewProductId,
+        p_rating: parseInt(rating.value),
+        p_body: body
+      })
+
+      if (error) throw error
+
+      if (data && data.error) {
+        reviewMsgEl.textContent = data.error
+        reviewMsgEl.className = 'review-msg error'
+        submitReviewBtn.disabled = false
+        submitReviewBtn.textContent = 'Submit Review'
+        return
+      }
+
+      reviewMsgEl.textContent = 'Your review has been submitted for moderation. Thank you!'
+      reviewMsgEl.className = 'review-msg info'
+      submitReviewBtn.textContent = 'Submitted'
+      reviewBodyEl.value = ''
+      document.querySelectorAll('.star-rating input').forEach(r => r.checked = false)
+      writeReviewBtn.style.display = 'none'
+    } catch (e) {
+      reviewMsgEl.textContent = e.message || 'Failed to submit review.'
+      reviewMsgEl.className = 'review-msg error'
+      submitReviewBtn.disabled = false
+      submitReviewBtn.textContent = 'Submit Review'
+    }
+  })
 }
 
 export default { initShop }

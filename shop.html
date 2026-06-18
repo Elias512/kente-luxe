@@ -9,6 +9,36 @@
 <title>Shop - Kente Luxe</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <link href="css/style.css" rel="stylesheet">
+<style>
+.reviews-section { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(201,168,76,0.1); }
+.reviews-summary { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+.reviews-summary-stars { color: var(--gold); font-size: 1rem; letter-spacing: 2px; }
+.reviews-summary-avg { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; color: var(--cream); }
+.reviews-summary-count { font-size: 0.78rem; color: var(--muted); }
+.review-card { background: rgba(201,168,76,0.03); border: 1px solid rgba(201,168,76,0.06); padding: 1rem; margin-bottom: 0.75rem; }
+.review-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; }
+.review-card-stars { color: var(--gold); font-size: 0.85rem; letter-spacing: 1px; }
+.review-card-user { font-size: 0.78rem; color: var(--muted); font-family: 'Jost', sans-serif; }
+.review-card-date { font-size: 0.7rem; color: var(--muted); }
+.review-card-body { font-size: 0.82rem; color: var(--text); line-height: 1.6; }
+.review-form { margin-top: 1rem; padding: 1rem; background: rgba(201,168,76,0.03); border: 1px solid rgba(201,168,76,0.08); }
+.review-form h4 { font-family: 'Cormorant Garamond', serif; font-size: 0.9rem; color: var(--cream); margin-bottom: 0.8rem; }
+.star-rating { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 0.2rem; margin-bottom: 0.8rem; }
+.star-rating input { display: none; }
+.star-rating label { font-size: 1.4rem; color: rgba(201,168,76,0.2); cursor: pointer; transition: color 0.15s; }
+.star-rating label:hover, .star-rating label:hover ~ label, .star-rating input:checked ~ label { color: var(--gold); }
+.review-form textarea { width: 100%; padding: 0.6rem 0.8rem; background: transparent; border: 1px solid rgba(201,168,76,0.15); color: var(--cream); font-family: 'Jost', sans-serif; font-size: 0.82rem; resize: vertical; min-height: 70px; }
+.review-form textarea:focus { outline: none; border-color: var(--gold); }
+.review-form .btn-submit-review { width: 100%; padding: 0.6rem; background: var(--gold); color: #000; border: none; font-family: 'Jost', sans-serif; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; margin-top: 0.6rem; }
+.review-form .btn-submit-review:disabled { opacity: 0.4; cursor: not-allowed; }
+.review-form .review-msg { margin-top: 0.5rem; font-size: 0.78rem; }
+.review-form .review-msg.success { color: #27AE60; }
+.review-form .review-msg.error { color: #E74C3C; }
+.review-form .review-msg.info { color: var(--gold); }
+.btn-write-review { width: 100%; padding: 0.6rem; background: transparent; border: 1px solid rgba(201,168,76,0.2); color: var(--gold); font-family: 'Jost', sans-serif; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; margin-top: 0.5rem; transition: border-color 0.2s; }
+.btn-write-review:hover { border-color: var(--gold); }
+.reviews-empty { text-align: center; padding: 1.5rem 0; color: var(--muted); font-size: 0.82rem; }
+</style>
 </head>
 <body>
 
@@ -189,6 +219,29 @@
             <span id="modal-add-text">Add to Cart</span>
           </button>
         </div>
+
+        <!-- REVIEWS SECTION -->
+        <div class="reviews-section" id="reviews-section">
+          <div class="product-detail-section-label">Customer Reviews</div>
+          <div class="reviews-summary" id="reviews-summary"></div>
+          <div class="reviews-list" id="reviews-list">
+            <div class="reviews-empty">Loading reviews...</div>
+          </div>
+          <button class="btn-write-review" id="btn-write-review" style="display:none;">Write a Review</button>
+          <div class="review-form" id="review-form" style="display:none;">
+            <h4>Write a Review</h4>
+            <div class="star-rating">
+              <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
+              <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+              <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+              <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+              <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+            </div>
+            <textarea id="review-body" placeholder="Share your experience with this product..."></textarea>
+            <button class="btn-submit-review" id="btn-submit-review">Submit Review</button>
+            <div class="review-msg" id="review-msg"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -201,44 +254,26 @@
       <a href="index.html" class="nav-logo">Kente <span>Luxe</span></a>
       <p>Premium African heritage fashion for the global stage. Wear your roots. Own your story.</p>
       <div class="newsletter">
-        <input type="email" placeholder="Your email address">
-        <button>Subscribe</button>
+        <input type="email" id="newsletter-email" placeholder="Your email address">
+        <button id="newsletter-btn">Subscribe</button>
       </div>
-    </div>
-    <div class="footer-col">
-      <h4>Shop</h4>
-      <ul>
-        <li><a href="#">Women</a></li>
-        <li><a href="#">Men</a></li>
-        <li><a href="#">Accessories</a></li>
-        <li><a href="#">Custom Orders</a></li>
-        <li><a href="#">Lookbook</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>Occasions</h4>
-      <ul>
-        <li><a href="#">Weddings</a></li>
-        <li><a href="#">Festivals</a></li>
-        <li><a href="#">Formal</a></li>
-        <li><a href="#">Casual</a></li>
-      </ul>
+      <div id="newsletter-msg" style="font-size:0.8rem;margin-top:0.5rem;color:var(--gold);"></div>
     </div>
     <div class="footer-col">
       <h4>Company</h4>
       <ul>
         <li><a href="our-story.html">Our Story</a></li>
-        <li><a href="#">Heritage Points</a></li>
-        <li><a href="#">Shipping & Returns</a></li>
-        <li><a href="#">Contact Us</a></li>
+        <li><a href="custom-order.html">Custom Orders</a></li>
+        <li><a href="shipping.html">Shipping & Returns</a></li>
+        <li><a href="contact.html">Contact Us</a></li>
       </ul>
     </div>
   </div>
   <div class="kente-line" style="margin-bottom:1.5rem;"></div>
   <div class="footer-bottom">
-    <p>© <span id="copyright-year"></span> Kente Luxe. All rights reserved.</p>
+    <p>&copy; <span id="copyright-year"></span> Kente Luxe. All rights reserved.</p>
     <script>document.getElementById('copyright-year').textContent = new Date().getFullYear()</script>
-    <p>Crafted with pride in Ghana 🇬🇭</p>
+    <p>Crafted with pride in Ghana &#x1F1EC;&#x1F1ED;</p>
   </div>
 </footer>
 
@@ -266,5 +301,43 @@
   initAuth()
 </script>
 
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var btn = document.getElementById('newsletter-btn')
+  var input = document.getElementById('newsletter-email')
+  var msg = document.getElementById('newsletter-msg')
+  if (!btn || !input) return
+  btn.addEventListener('click', async function () {
+    var email = input.value.trim()
+    if (!email) { msg.textContent = 'Please enter your email.'; return }
+    msg.textContent = 'Subscribing...'
+    btn.disabled = true
+    try {
+      var r = await fetch('https://csajcdvwmmumhpuzpmuk.supabase.co/rest/v1/newsletter_subscriptions', {
+        method: 'POST',
+        headers: {
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzYWpjZHZ3bW11bWhwdXpwbXVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjA3NjIsImV4cCI6MjA5NjMzNjc2Mn0.A1e_7yMdgm9Yfs4LoZvMH6MAGo_dtxTkRisePjOPl5k',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzYWpjZHZ3bW11bWhwdXpwbXVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjA3NjIsImV4cCI6MjA5NjMzNjc2Mn0.A1e_7yMdgm9Yfs4LoZvMH6MAGo_dtxTkRisePjOPl5k',
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({ email: email })
+      })
+      if (r.ok) {
+        msg.textContent = 'Thanks for subscribing!'
+        input.value = ''
+      } else {
+        var d = await r.json()
+        if (d.code === '23505') msg.textContent = 'This email is already subscribed.'
+        else msg.textContent = 'Error: ' + (d.message || d.details || r.status)
+      }
+    } catch (e) {
+      msg.textContent = 'Error: ' + e.message
+    }
+    btn.disabled = false
+  })
+})
+</script>
 </body>
 </html>

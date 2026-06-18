@@ -12,17 +12,18 @@
 <style>
 .admin-section { max-width: 1100px; margin: 4rem auto; padding: 0 1.5rem; }
 .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-.dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
+.dashboard-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 2rem; }
 .dashboard-card { background: var(--dark-2); border: 1px solid rgba(201, 168, 76, 0.1); padding: 1.5rem; }
 .dashboard-card-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 0.5rem; }
 .dashboard-card-value { font-family: 'Cormorant Garamond', serif; font-size: 2rem; color: var(--gold); font-weight: 600; }
 .admin-loading { text-align: center; padding: 3rem 0; color: var(--muted); }
-.quick-links { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+.quick-links { display: grid; gap: 1rem; }
 .quick-link { display: block; background: var(--dark-2); border: 1px solid rgba(201, 168, 76, 0.1); padding: 1.5rem; text-decoration: none; color: var(--text); transition: border-color 0.2s; }
 .quick-link:hover { border-color: var(--gold); }
 .quick-link h3 { font-family: 'Cormorant Garamond', serif; color: var(--cream); margin-bottom: 0.3rem; }
 .quick-link p { font-size: 0.8rem; color: var(--muted); }
-@media (max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } .quick-links { grid-template-columns: 1fr; } }
+@media (max-width: 1000px) { .dashboard-grid { grid-template-columns: repeat(3, 1fr); } .quick-links { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 600px) { .dashboard-grid { grid-template-columns: repeat(2, 1fr); } .quick-links { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -35,9 +36,13 @@
     <li><a href="dashboard.html">Dashboard</a></li>
     <li><a href="orders.html">Orders</a></li>
     <li><a href="products.html">Products</a></li>
+    <li><a href="customers.html">Customers</a></li>
+    <li><a href="reviews.html">Reviews</a></li>
+    <li><a href="analytics.html">Analytics</a></li>
   </ul>
   <div class="nav-actions">
     <span id="admin-email-display" style="font-size:0.78rem;color:var(--muted);"></span>
+    <a href="profile.html" style="font-size:0.78rem;color:var(--gold);text-decoration:none;margin-right:0.8rem;">Profile</a>
     <button class="btn-outline-kl" id="admin-signout-btn" style="padding:0.4rem 1rem;font-size:0.72rem;">Sign Out</button>
   </div>
   <button class="nav-toggle" aria-label="Toggle menu">☰</button>
@@ -62,16 +67,32 @@
         <div class="dashboard-card-label">Products</div>
         <div class="dashboard-card-value" id="stat-products">—</div>
       </div>
+      <div class="dashboard-card">
+        <div class="dashboard-card-label">Customers</div>
+        <div class="dashboard-card-value" id="stat-customers">—</div>
+      </div>
+      <div class="dashboard-card">
+        <div class="dashboard-card-label">Low Stock</div>
+        <div class="dashboard-card-value" id="stat-low-stock" style="color:var(--cream);">—</div>
+      </div>
     </div>
     <h2 class="account-orders-title">Quick Actions</h2>
-    <div class="quick-links">
+    <div class="quick-links" style="grid-template-columns: repeat(4, 1fr);">
       <a href="orders.html" class="quick-link">
-        <h3>Manage Orders</h3>
+        <h3>Orders</h3>
         <p>View, update, and track all customer orders</p>
       </a>
       <a href="products.html" class="quick-link">
-        <h3>Manage Products</h3>
+        <h3>Products</h3>
         <p>Add, edit, or remove products from the shop</p>
+      </a>
+      <a href="reviews.html" class="quick-link">
+        <h3>Reviews</h3>
+        <p>Approve or reject customer product reviews</p>
+      </a>
+      <a href="analytics.html" class="quick-link">
+        <h3>Analytics</h3>
+        <p>Revenue trends, top products, order breakdown</p>
       </a>
     </div>
   </div>
@@ -80,6 +101,7 @@
 <script type="module">
   import { apiFetch } from '../js/cart.js'
   import { requireManager, adminSignOut, formatCurrency } from '../js/admin.js'
+  import { supabase } from '../js/supabase.js'
 
   const navToggle = document.querySelector('.nav-toggle')
   const navLinks = document.querySelector('.nav-links')
@@ -105,6 +127,17 @@
     document.getElementById('stat-orders').textContent = (orders || []).length
     document.getElementById('stat-revenue').textContent = formatCurrency((orders || []).filter(o => o.status !== 'cancelled').reduce((s, o) => s + Number(o.total || 0), 0))
     document.getElementById('stat-products').textContent = (products || []).length
+
+    const { data: userCount } = await supabase.rpc('count_users')
+    document.getElementById('stat-customers').textContent = userCount ?? '—'
+
+    const { data: lowStock } = await supabase.rpc('get_low_stock', { threshold: 5 })
+    const count = (lowStock || []).length
+    document.getElementById('stat-low-stock').textContent = count
+    if (count > 0) {
+      document.getElementById('stat-low-stock').style.color = '#E74C3C'
+    }
+
     loadingEl.style.display = 'none'
     contentEl.style.display = ''
   } catch (e) {
@@ -112,6 +145,15 @@
     console.error(e)
   }
 </script>
+
+<footer>
+  <div class="kente-line" style="margin-bottom:1.5rem;"></div>
+  <div class="footer-bottom" style="padding:0 1.5rem 1.5rem;">
+    <p>&copy; <span id="copyright-year"></span> Kente Luxe. All rights reserved.</p>
+    <script>document.getElementById('copyright-year').textContent = new Date().getFullYear()</script>
+    <p>Crafted with pride in Ghana &#x1F1EC;&#x1F1ED;</p>
+  </div>
+</footer>
 
 </body>
 </html>
