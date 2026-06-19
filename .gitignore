@@ -146,3 +146,8 @@ vite.config.ts.timestamp-*
 
 # Upload scripts (contains service role key)
 scripts/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
