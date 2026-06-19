@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://csajcdvwmmumhpuzpmuk.supabase.co">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>Kente Luxe</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="kente-line"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">Kente <span>Luxe</span></a>
+  <ul class="nav-links">
+    <li><a href="shop.html">Shop</a></li>
+    <li><a href="lookbook.html">Lookbook</a></li>
+    <li><a href="custom-order.html">Custom Order</a></li>
+    <li><a href="our-story.html">Our Story</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="nav-login-link">Login</a>
+    <a href="cart.html" class="cart-btn">Cart <span class="cart-count">0</span></a>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-tag">New Collection 2025</div>
+    <h1 class="hero-title">
+      Wear Your Roots.<br>
+      Own Your <em>Story.</em>
+    </h1>
+    <p class="hero-sub">Premium African heritage fashion — where the richness of kente and ankara meet contemporary, high-end design for the global stage.</p>
+    <div class="hero-cta">
+      <a href="shop.html" class="btn-primary-kl">Shop the Collection</a>
+      <a href="lookbook.html" class="btn-outline-kl">View Lookbook</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-carousel">
+      <div class="hero-carousel-slide active" style="background-image: url('https://csajcdvwmmumhpuzpmuk.supabase.co/storage/v1/object/public/lookbook/hero-index-model-a.png');"></div>
+      <div class="hero-carousel-slide" style="background-image: url('https://csajcdvwmmumhpuzpmuk.supabase.co/storage/v1/object/public/lookbook/hero-index-model-b.png');"></div>
+      <div class="hero-carousel-slide" style="background-image: url('https://csajcdvwmmumhpuzpmuk.supabase.co/storage/v1/object/public/lookbook/hero-index-model-c.png');"></div>
+    </div>
+    <div class="hero-badge">
+      <p>Featured Collection</p>
+      <strong>Kente Royal Series</strong>
+    </div>
+  </div>
+</section>
+
+<!-- OCCASIONS -->
+<section class="section">
+  <div class="section-label">Shop by Occasion</div>
+  <h2 class="section-title">Dress for Every <em>Moment</em></h2>
+  <div class="occasions-grid">
+    <div class="occasion-card">
+      <span class="occasion-icon">💍</span>
+      <div class="occasion-name">Wedding</div>
+      <div class="occasion-count" data-occasion="Wedding">— pieces</div>
+    </div>
+    <div class="occasion-card">
+      <span class="occasion-icon">🎉</span>
+      <div class="occasion-name">Festival</div>
+      <div class="occasion-count" data-occasion="Festival">— pieces</div>
+    </div>
+    <div class="occasion-card">
+      <span class="occasion-icon">👔</span>
+      <div class="occasion-name">Formal</div>
+      <div class="occasion-count" data-occasion="Formal">— pieces</div>
+    </div>
+    <div class="occasion-card">
+      <span class="occasion-icon">☀️</span>
+      <div class="occasion-name">Casual</div>
+      <div class="occasion-count" data-occasion="Casual">— pieces</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED PRODUCTS -->
+<section class="products-section">
+  <div class="products-header">
+    <div>
+      <div class="section-label">Handpicked for You</div>
+      <h2 class="section-title">Featured <em>Pieces</em></h2>
+    </div>
+    <a href="shop.html" class="view-all">View All →</a>
+  </div>
+  <div class="products-grid" id="products-grid">
+    <!-- Products will be loaded dynamically from Supabase -->
+  </div>
+</section>
+
+<!-- STORY SECTION -->
+<section class="story-section" id="story">
+  <div class="story-img" style="background-image: url('https://csajcdvwmmumhpuzpmuk.supabase.co/storage/v1/object/public/lookbook/site-story-index-weaver-hands.png'); background-size: cover; background-position: center;"></div>
+  <div class="story-content">
+    <div class="section-label">Our Story</div>
+    <blockquote class="story-quote">"Every thread tells a story. Every pattern carries a <em>legacy.</em>"</blockquote>
+    <p class="story-text">Kente Luxe was born from a deep love of African heritage and a vision to bring the craftsmanship of Ghanaian weavers to the global stage. Each piece in our collection is rooted in cultural meaning — from the gold threads of Asante royalty to the bold geometry of Northern smocks.</p>
+    <div class="story-facts">
+      <div class="story-fact">
+        <strong>12+</strong>
+        <span>Fabric Traditions</span>
+      </div>
+      <div class="story-fact">
+        <strong>Ghana</strong>
+        <span>Made with Pride</span>
+      </div>
+      <div class="story-fact">
+        <strong>100%</strong>
+        <span>Authentic Prints</span>
+      </div>
+      <div class="story-fact">
+        <strong>Global</strong>
+        <span>Delivery</span>
+      </div>
+    </div>
+    <a href="custom-order.html" class="btn-primary-kl">Commission a Custom Piece</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="index.html" class="nav-logo">Kente <span>Luxe</span></a>
+      <p>Premium African heritage fashion for the global stage. Wear your roots. Own your story.</p>
+      <div class="newsletter">
+        <input type="email" id="newsletter-email" placeholder="Your email address">
+        <button id="newsletter-btn">Subscribe</button>
+      </div>
+      <div id="newsletter-msg" style="font-size:0.8rem;margin-top:0.5rem;color:var(--gold);"></div>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="our-story.html">Our Story</a></li>
+        <li><a href="custom-order.html">Custom Orders</a></li>
+        <li><a href="shipping.html">Shipping & Returns</a></li>
+        <li><a href="contact.html">Contact Us</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="kente-line" style="margin-bottom:1.5rem;"></div>
+  <div class="footer-bottom">
+    <p>&copy; <span id="copyright-year"></span> Kente Luxe. All rights reserved.</p>
+    <script>document.getElementById('copyright-year').textContent = new Date().getFullYear()</script>
+    <p>Crafted with pride in Ghana &#x1F1EC;&#x1F1ED;</p>
+  </div>
+</footer>
+
+<script type="module">
+  import { renderFeaturedProducts } from './js/products.js'
+  import { initNavbarCart, apiFetch } from './js/cart.js'
+  import { initAuth } from './js/auth.js'
+  
+  // Navigation toggle
+  const navToggle = document.querySelector('.nav-toggle')
+  const navLinks = document.querySelector('.nav-links')
+  if (navToggle && navLinks) {
+    navToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open')
+    })
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('nav')) {
+        navLinks.classList.remove('open')
+      }
+    })
+  }
+  
+  // Hero image carousel (crossfade)
+  const slides = document.querySelectorAll('.hero-carousel-slide')
+  let currentSlide = 0
+  if (slides.length > 1) {
+    setInterval(() => {
+      slides.forEach(s => s.classList.remove('active'))
+      currentSlide = (currentSlide + 1) % slides.length
+      slides[currentSlide].classList.add('active')
+    }, 8000)
+  }
+
+  // Load occasion counts from database
+  ;(async () => {
+    try {
+      const products = await apiFetch('products?select=occasion')
+      const counts = {}
+      for (const p of products || []) {
+        if (!p.occasion) continue
+        const occasions = p.occasion.replace(/[{}]/g, '').split(',').map(s => s.trim()).filter(Boolean)
+        for (const o of occasions) {
+          counts[o] = (counts[o] || 0) + 1
+        }
+      }
+      document.querySelectorAll('[data-occasion]').forEach(el => {
+        const name = el.dataset.occasion
+        el.textContent = `${counts[name] || 0} pieces`
+      })
+    } catch (e) {
+      console.error('Failed to load occasion counts:', e)
+    }
+  })()
+
+  // Render featured products and init cart
+  renderFeaturedProducts()
+  initNavbarCart()
+  initAuth()
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var btn = document.getElementById('newsletter-btn')
+  var input = document.getElementById('newsletter-email')
+  var msg = document.getElementById('newsletter-msg')
+  if (!btn || !input) return
+  btn.addEventListener('click', async function () {
+    var email = input.value.trim()
+    if (!email) { msg.textContent = 'Please enter your email.'; return }
+    msg.textContent = 'Subscribing...'
+    btn.disabled = true
+    try {
+      var r = await fetch('https://csajcdvwmmumhpuzpmuk.supabase.co/rest/v1/newsletter_subscriptions', {
+        method: 'POST',
+        headers: {
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzYWpjZHZ3bW11bWhwdXpwbXVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjA3NjIsImV4cCI6MjA5NjMzNjc2Mn0.A1e_7yMdgm9Yfs4LoZvMH6MAGo_dtxTkRisePjOPl5k',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzYWpjZHZ3bW11bWhwdXpwbXVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjA3NjIsImV4cCI6MjA5NjMzNjc2Mn0.A1e_7yMdgm9Yfs4LoZvMH6MAGo_dtxTkRisePjOPl5k',
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({ email: email })
+      })
+      if (r.ok) {
+        msg.textContent = 'Thanks for subscribing!'
+        input.value = ''
+      } else {
+        var d = await r.json()
+        if (d.code === '23505') msg.textContent = 'This email is already subscribed.'
+        else msg.textContent = 'Error: ' + (d.message || d.details || r.status)
+      }
+    } catch (e) {
+      msg.textContent = 'Error: ' + e.message
+    }
+    btn.disabled = false
+  })
+})
+</script>
+</body>
+</html>

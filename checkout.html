@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://csajcdvwmmumhpuzpmuk.supabase.co">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>Checkout - Kente Luxe</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="kente-line"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">Kente <span>Luxe</span></a>
+  <ul class="nav-links">
+    <li><a href="shop.html">Shop</a></li>
+    <li><a href="lookbook.html">Lookbook</a></li>
+    <li><a href="custom-order.html">Custom Order</a></li>
+    <li><a href="our-story.html">Our Story</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="nav-login-link">Login</a>
+    <a href="cart.html" class="cart-btn">Cart <span class="cart-count">0</span></a>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+</nav>
+
+<!-- CHECKOUT HEADER -->
+<section class="checkout-header">
+  <a href="cart.html" class="checkout-back">← Back to Cart</a>
+  <h1 class="section-title" style="margin: 0;">Checkout</h1>
+</section>
+
+<!-- CHECKOUT CONTENT -->
+<section class="checkout-section">
+
+  <!-- LOADING -->
+  <div class="checkout-loading" id="checkout-loading">
+    <div class="cart-loader"></div>
+    <p>Loading your order...</p>
+  </div>
+
+  <!-- EMPTY CART -->
+  <div class="checkout-empty" id="checkout-empty" style="display: none;">
+    <div class="checkout-empty-icon">🛒</div>
+    <h2>Your cart is empty</h2>
+    <p>Add some pieces to your cart before checking out.</p>
+    <a href="shop.html" class="btn-primary-kl">Browse Collections</a>
+  </div>
+
+  <!-- ORDER SUMMARY -->
+  <div class="checkout-summary" id="checkout-summary" style="display: none;">
+    <div class="checkout-summary-header">
+      <h3>Order Summary</h3>
+      <span id="checkout-item-count">0 items</span>
+    </div>
+    <div class="checkout-summary-items" id="checkout-items">
+      <!-- Rendered by checkout.js -->
+    </div>
+    <div class="checkout-totals">
+      <div class="checkout-total-row">
+        <span>Subtotal</span>
+        <span id="checkout-subtotal">GHS 0</span>
+      </div>
+      <div class="checkout-total-row">
+        <span>Tax (12.5% VAT)</span>
+        <span id="checkout-tax">GHS 0</span>
+      </div>
+      <div class="checkout-total-row">
+        <span>Delivery</span>
+        <span id="checkout-delivery">GHS 0</span>
+      </div>
+      <div class="checkout-grand-total">
+        <span>Total</span>
+        <span id="checkout-total">GHS 0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- DELIVERY FORM -->
+  <div class="checkout-form-section" id="checkout-form-section" style="display: none;">
+    <div class="checkout-form-header">
+      <h3>Delivery Details</h3>
+    </div>
+    <form id="checkout-form" class="checkout-form" novalidate>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="full_name">Full Name <span class="form-required">*</span></label>
+          <input type="text" id="full_name" name="full_name" class="form-input" placeholder="Your full name" required>
+          <div class="form-error" style="display: none;"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="email">Email <span class="form-required">*</span></label>
+          <input type="email" id="email" name="email" class="form-input" placeholder="your@email.com" required>
+          <div class="form-error" style="display: none;"></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="phone">Phone <span class="form-required">*</span></label>
+          <input type="tel" id="phone" name="phone" class="form-input" placeholder="+233 XX XXX XXXX" required>
+          <div class="form-error" style="display: none;"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="region">Region <span class="form-required">*</span></label>
+          <select id="region" name="region" class="form-select" required>
+            <option value="">Select a region</option>
+            <option value="Greater Accra">Greater Accra</option>
+            <option value="Ashanti">Ashanti</option>
+            <option value="Eastern">Eastern</option>
+            <option value="Western">Western</option>
+            <option value="Central">Central</option>
+            <option value="Volta">Volta</option>
+            <option value="Northern">Northern</option>
+            <option value="Upper East">Upper East</option>
+            <option value="Upper West">Upper West</option>
+            <option value="Bono">Bono</option>
+            <option value="Bono East">Bono East</option>
+            <option value="Ahafo">Ahafo</option>
+            <option value="Oti">Oti</option>
+            <option value="North East">North East</option>
+            <option value="Savannah">Savannah</option>
+            <option value="Western North">Western North</option>
+            <option value="International">International</option>
+          </select>
+          <div class="form-error" style="display: none;"></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="address">Street Address <span class="form-required">*</span></label>
+        <input type="text" id="address" name="address" class="form-input" placeholder="Street name, building, house number" required>
+        <div class="form-error" style="display: none;"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="city">City / Town <span class="form-required">*</span></label>
+          <input type="text" id="city" name="city" class="form-input" placeholder="City or town" required>
+          <div class="form-error" style="display: none;"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="notes">Delivery Notes</label>
+          <textarea id="notes" name="notes" class="form-textarea" placeholder="Special delivery instructions, landmark, etc."></textarea>
+        </div>
+      </div>
+
+      <div class="checkout-payment-section">
+        <div class="checkout-form-header">
+          <h3>Payment Method</h3>
+        </div>
+
+        <div class="payment-methods" id="payment-methods">
+          <label class="payment-method-card" data-payment="mobile_money">
+            <input type="radio" name="payment_method" value="mobile_money" class="payment-method-radio" checked>
+            <div class="payment-method-content">
+              <span class="payment-method-icon">📱</span>
+              <span class="payment-method-label">Mobile Money</span>
+              <span class="payment-method-sub">MTN · Telecel · AirtelTigo</span>
+            </div>
+          </label>
+          <label class="payment-method-card" data-payment="visa">
+            <input type="radio" name="payment_method" value="visa" class="payment-method-radio">
+            <div class="payment-method-content">
+              <span class="payment-method-icon">💳</span>
+              <span class="payment-method-label">Visa Card</span>
+              <span class="payment-method-sub">Credit or Debit Card</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="payment-form" id="payment-form-mobile" style="display: none;">
+          <div class="form-group">
+            <label class="form-label" for="mobile_network">Mobile Network <span class="form-required">*</span></label>
+            <select id="mobile_network" name="mobile_network" class="form-select">
+              <option value="">Select network</option>
+              <option value="MTN">MTN Ghana</option>
+              <option value="Telecel">Telecel Cash</option>
+              <option value="AirtelTigo">AirtelTigo Money</option>
+            </select>
+            <div class="form-error" style="display: none;"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="mobile_phone">Phone Number <span class="form-required">*</span></label>
+            <input type="tel" id="mobile_phone" name="mobile_phone" class="form-input" placeholder="e.g. 054 XXX XXXX">
+            <div class="form-error" style="display: none;"></div>
+          </div>
+        </div>
+
+        <div class="payment-form" id="payment-form-visa" style="display: none;">
+          <div class="form-group">
+            <label class="form-label" for="card_name">Cardholder Name <span class="form-required">*</span></label>
+            <input type="text" id="card_name" name="card_name" class="form-input" placeholder="Name on card">
+            <div class="form-error" style="display: none;"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="card_number">Card Number <span class="form-required">*</span></label>
+            <input type="text" id="card_number" name="card_number" class="form-input" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" inputmode="numeric">
+            <div class="form-error" style="display: none;"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="card_expiry">Expiry Date <span class="form-required">*</span></label>
+              <input type="text" id="card_expiry" name="card_expiry" class="form-input" placeholder="MM/YY" maxlength="5">
+              <div class="form-error" style="display: none;"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="card_cvv">CVV <span class="form-required">*</span></label>
+              <input type="text" id="card_cvv" name="card_cvv" class="form-input" placeholder="***" maxlength="4" inputmode="numeric">
+              <div class="form-error" style="display: none;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="checkout-form-error" id="checkout-form-error" style="display: none;"></div>
+
+      <button type="submit" class="btn-primary-kl checkout-submit-btn" id="place-order-btn">
+        <span class="checkout-spinner" id="order-spinner" style="display: none;"></span>
+        <span id="order-btn-text">Place Order</span>
+      </button>
+    </form>
+  </div>
+
+  <!-- PROCESSING -->
+  <div class="checkout-processing" id="checkout-processing" style="display: none;">
+    <div class="checkout-processing-inner">
+      <div class="checkout-processing-spinner"></div>
+      <h3>Processing Payment</h3>
+      <p>Please do not close this page</p>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="checkout-success" id="checkout-success" style="display: none;">
+    <div class="checkout-success-icon">✓</div>
+    <h2>Order Confirmed!</h2>
+    <p>Thank you for your order. We'll send a confirmation to <strong id="order-confirmation-email">your email</strong>.</p>
+    <p class="checkout-success-id">Order Reference: <span id="order-confirmation-id">Confirmed</span></p>
+    <p class="checkout-success-text">Your payment has been processed successfully. We'll send a confirmation to your email and contact you within 24–48 hours regarding delivery.</p>
+    <a href="shop.html" class="btn-primary-kl">Continue Shopping</a>
+  </div>
+
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="index.html" class="nav-logo">Kente <span>Luxe</span></a>
+      <p>Premium African heritage fashion for the global stage. Wear your roots. Own your story.</p>
+      <div class="newsletter">
+        <input type="email" id="newsletter-email" placeholder="Your email address">
+        <button id="newsletter-btn">Subscribe</button>
+      </div>
+      <div id="newsletter-msg" style="font-size:0.8rem;margin-top:0.5rem;color:var(--gold);"></div>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="our-story.html">Our Story</a></li>
+        <li><a href="custom-order.html">Custom Orders</a></li>
+        <li><a href="shipping.html">Shipping & Returns</a></li>
+        <li><a href="contact.html">Contact Us</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="kente-line" style="margin-bottom:1.5rem;"></div>
+  <div class="footer-bottom">
+    <p>&copy; <span id="copyright-year"></span> Kente Luxe. All rights reserved.</p>
+    <script>document.getElementById('copyright-year').textContent = new Date().getFullYear()</script>
+    <p>Crafted with pride in Ghana &#x1F1EC;&#x1F1ED;</p>
+  </div>
+</footer>
+
+<script type="module">
+  import { loadCheckout } from './js/checkout.js'
+  import { initNavbarCart } from './js/cart.js'
+  import { initAuth } from './js/auth.js'
+
+  const navToggle = document.querySelector('.nav-toggle')
+  const navLinks = document.querySelector('.nav-links')
+  if (navToggle && navLinks) {
+    navToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open')
+    })
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('nav')) {
+        navLinks.classList.remove('open')
+      }
+    })
+  }
+
+  loadCheckout()
+  initNavbarCart()
+  initAuth()
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var btn = document.getElementById('newsletter-btn')
+  var input = document.getElementById('newsletter-email')
+  var msg = document.getElementById('newsletter-msg')
+  if (!btn || !input) return
+  btn.addEventListener('click', async function () {
+    var email = input.value.trim()
+    if (!email) { msg.textContent = 'Please enter your email.'; return }
+    msg.textContent = 'Subscribing...'
+    btn.disabled = true
+    try {
+      var r = await fetch('https://csajcdvwmmumhpuzpmuk.supabase.co/rest/v1/newsletter_subscriptions', {
+        method: 'POST',
+        headers: {
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzYWpjZHZ3bW11bWhwdXpwbXVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjA3NjIsImV4cCI6MjA5NjMzNjc2Mn0.A1e_7yMdgm9Yfs4LoZvMH6MAGo_dtxTkRisePjOPl5k',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzYWpjZHZ3bW11bWhwdXpwbXVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjA3NjIsImV4cCI6MjA5NjMzNjc2Mn0.A1e_7yMdgm9Yfs4LoZvMH6MAGo_dtxTkRisePjOPl5k',
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({ email: email })
+      })
+      if (r.ok) {
+        msg.textContent = 'Thanks for subscribing!'
+        input.value = ''
+      } else {
+        var d = await r.json()
+        if (d.code === '23505') msg.textContent = 'This email is already subscribed.'
+        else msg.textContent = 'Error: ' + (d.message || d.details || r.status)
+      }
+    } catch (e) {
+      msg.textContent = 'Error: ' + e.message
+    }
+    btn.disabled = false
+  })
+})
+</script>
+</body>
+</html>

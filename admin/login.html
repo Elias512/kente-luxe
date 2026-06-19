@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://csajcdvwmmumhpuzpmuk.supabase.co">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>Admin Login - Kente Luxe</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="../css/style.css" rel="stylesheet">
+<style>
+.auth-tabs { display: flex; justify-content: center; gap: 0; margin-bottom: 2rem; border-bottom: 1px solid var(--cream-faded); }
+.auth-tab { padding: 0.7rem 2rem; font-family: 'Jost', sans-serif; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; background: transparent; border: 1px solid transparent; border-bottom: none; color: var(--muted); cursor: pointer; transition: all 0.2s; }
+.auth-tab:hover { color: var(--cream); border-color: var(--cream-faded); }
+.auth-tab.active { color: var(--gold); border-color: var(--cream-faded); border-bottom: 2px solid var(--gold); }
+.auth-form { display: none; }
+.auth-form.active { display: block; }
+</style>
+</head>
+<body>
+
+<div class="kente-line"></div>
+
+<nav>
+  <a href="../index.html" class="nav-logo">Kente <span>Luxe</span></a>
+  <ul class="nav-links">
+    <li><a href="../shop.html">Shop</a></li>
+    <li><a href="../lookbook.html">Lookbook</a></li>
+    <li><a href="../custom-order.html">Custom Order</a></li>
+    <li><a href="../our-story.html">Our Story</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="../login.html" class="nav-login-link">Login</a>
+    <a href="../cart.html" class="cart-btn">Cart <span class="cart-count">0</span></a>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+</nav>
+
+<section class="auth-section">
+  <h1 class="section-title">Admin <em>Portal</em></h1>
+
+  <div class="auth-tabs">
+    <button class="auth-tab active" data-tab="signin">Sign In</button>
+    <button class="auth-tab" data-tab="register">Register</button>
+  </div>
+
+  <!-- SIGN IN FORM -->
+  <form class="auth-form active" id="admin-login-form">
+    <div class="form-group">
+      <label class="form-label" for="admin-email">Email</label>
+      <input class="form-input" type="email" id="admin-email" required autocomplete="email" placeholder="admin@kenteluxe.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="admin-password">Password</label>
+      <div class="password-input-wrapper">
+        <input class="form-input" type="password" id="admin-password" required autocomplete="current-password" placeholder="********">
+        <button type="button" class="password-toggle" aria-label="Toggle password visibility" data-target="admin-password">Show</button>
+      </div>
+    </div>
+    <div class="form-error" id="admin-login-error"></div>
+    <button type="submit" class="btn-primary-kl auth-submit" id="admin-login-submit">Sign In</button>
+    <p class="auth-toggle-text">
+      <a href="../login.html" style="color:var(--muted);">Customer login</a>
+    </p>
+  </form>
+
+  <!-- REGISTER FORM -->
+  <form class="auth-form" id="admin-register-form">
+    <div class="form-group">
+      <label class="form-label" for="reg-name">Full Name</label>
+      <input class="form-input" type="text" id="reg-name" required placeholder="Your name">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="reg-email">Email</label>
+      <input class="form-input" type="email" id="reg-email" required autocomplete="email" placeholder="admin@kenteluxe.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="reg-password">Password</label>
+      <div class="password-input-wrapper">
+        <input class="form-input" type="password" id="reg-password" required autocomplete="new-password" placeholder="Min. 6 characters">
+        <button type="button" class="password-toggle" aria-label="Toggle password visibility" data-target="reg-password">Show</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="reg-confirm">Confirm Password</label>
+      <div class="password-input-wrapper">
+        <input class="form-input" type="password" id="reg-confirm" required placeholder="Repeat password">
+        <button type="button" class="password-toggle" aria-label="Toggle password visibility" data-target="reg-confirm">Show</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="reg-secret">Admin Secret Key</label>
+      <div class="password-input-wrapper">
+        <input class="form-input" type="password" id="reg-secret" required placeholder="Enter the admin secret key">
+        <button type="button" class="password-toggle" aria-label="Toggle secret visibility" data-target="reg-secret">Show</button>
+      </div>
+    </div>
+    <div class="form-error" id="admin-register-error"></div>
+    <button type="submit" class="btn-primary-kl auth-submit" id="admin-register-submit">Create Admin Account</button>
+  </form>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="../index.html" class="nav-logo">Kente <span>Luxe</span></a>
+      <p>Premium African heritage fashion for the global stage. Wear your roots. Own your story.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Shop</h4>
+      <ul>
+        <li><a href="../shop.html">Women</a></li>
+        <li><a href="../shop.html">Men</a></li>
+        <li><a href="../shop.html">Accessories</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="../our-story.html">Our Story</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="kente-line" style="margin-bottom:1.5rem;"></div>
+  <div class="footer-bottom">
+    <p>&copy; <span id="copyright-year"></span> Kente Luxe. All rights reserved.</p>
+    <script>document.getElementById('copyright-year').textContent = new Date().getFullYear()</script>
+    <p>Crafted with pride in Ghana &#x1F1EC;&#x1F1ED;</p>
+  </div>
+</footer>
+
+<script type="module">
+  import { supabase } from '../js/supabase.js'
+  import { apiFetch } from '../js/cart.js'
+
+  // Tab switching
+  const tabs = document.querySelectorAll('.auth-tab')
+  const forms = {
+    signin: document.getElementById('admin-login-form'),
+    register: document.getElementById('admin-register-form')
+  }
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'))
+      tab.classList.add('active')
+      Object.values(forms).forEach(f => f.classList.remove('active'))
+      const target = forms[tab.dataset.tab]
+      if (target) target.classList.add('active')
+      document.querySelectorAll('.form-error').forEach(e => e.textContent = '')
+    })
+  })
+
+  // Password toggle
+  document.querySelectorAll('.password-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const input = document.getElementById(btn.dataset.target)
+      const isPassword = input.type === 'password'
+      input.type = isPassword ? 'text' : 'password'
+      btn.textContent = isPassword ? 'Hide' : 'Show'
+    })
+  })
+
+  // Nav toggle
+  const navToggle = document.querySelector('.nav-toggle')
+  const navLinks = document.querySelector('.nav-links')
+  if (navToggle && navLinks) {
+    navToggle.addEventListener('click', () => navLinks.classList.toggle('open'))
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('nav')) navLinks.classList.remove('open')
+    })
+  }
+
+  // === SIGN IN ===
+  const loginForm = document.getElementById('admin-login-form')
+  const loginError = document.getElementById('admin-login-error')
+  const loginBtn = document.getElementById('admin-login-submit')
+
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault()
+    loginError.textContent = ''
+    loginBtn.disabled = true
+    loginBtn.textContent = 'Signing in...'
+
+    try {
+      const email = document.getElementById('admin-email').value
+      const password = document.getElementById('admin-password').value
+
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) throw error
+
+      const manager = await apiFetch(
+        `managers?email=eq.${encodeURIComponent(email)}&select=*`
+      )
+
+      if (!manager || manager.length === 0) {
+        await supabase.auth.signOut()
+        throw new Error('Access denied. You are not authorized as a manager.')
+      }
+
+      window.location.href = 'dashboard.html'
+    } catch (err) {
+      loginError.textContent = err.message || 'Login failed'
+      loginBtn.disabled = false
+      loginBtn.textContent = 'Sign In'
+    }
+  })
+
+  // === REGISTER ===
+  const regForm = document.getElementById('admin-register-form')
+  const regError = document.getElementById('admin-register-error')
+  const regBtn = document.getElementById('admin-register-submit')
+
+  regForm.addEventListener('submit', async (e) => {
+    e.preventDefault()
+    regError.textContent = ''
+    
+    const name = document.getElementById('reg-name').value.trim()
+    const email = document.getElementById('reg-email').value.trim()
+    const password = document.getElementById('reg-password').value
+    const confirm = document.getElementById('reg-confirm').value
+    const secret = document.getElementById('reg-secret').value
+
+    if (!name || !email || !password || !confirm || !secret) {
+      regError.textContent = 'All fields are required.'
+      return
+    }
+
+    if (password !== confirm) {
+      regError.textContent = 'Passwords do not match.'
+      return
+    }
+
+    if (password.length < 6) {
+      regError.textContent = 'Password must be at least 6 characters.'
+      return
+    }
+
+    regBtn.disabled = true
+    regBtn.textContent = 'Creating account...'
+
+    try {
+      // 1. Verify the admin secret key
+      const { data: keyValid, error: keyError } = await supabase.rpc('verify_admin_key', {
+        input_key: secret
+      })
+
+      if (keyError) throw new Error('Failed to verify key. Please try again.')
+      if (!keyValid) throw new Error('Invalid Admin Secret Key.')
+
+      // 2. Try to create auth user (may fail if already exists)
+      let userCreated = false
+      const { error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { full_name: name, role: 'admin' } }
+      })
+
+      if (authError) {
+        if (!authError.message?.toLowerCase().includes('already')) {
+          throw authError
+        }
+      } else {
+        userCreated = true
+      }
+
+      // 3. Insert into managers table via RPC (bypasses RLS)
+      const { data: inserted, error: insertError } = await supabase.rpc('add_manager', {
+        manager_email: email,
+        manager_name: name,
+        manager_role: 'admin'
+      })
+
+      if (insertError) throw insertError
+
+      if (inserted === false) {
+        throw new Error('This email is already registered as an admin.')
+      }
+
+      // 4. If new account, sign them in automatically
+      if (userCreated) {
+        const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
+        if (!signInError) {
+          window.location.href = 'dashboard.html'
+          return
+        }
+      }
+
+      // 5. Existing user — tell them to sign in
+      regError.style.color = 'var(--gold)'
+      regError.textContent = 'Admin account created! You can now sign in.'
+      regBtn.textContent = 'Done'
+      setTimeout(() => {
+        document.querySelector('[data-tab="signin"]').click()
+        document.getElementById('admin-email').value = email
+        regError.style.color = ''
+        regError.textContent = ''
+      }, 2500)
+    } catch (err) {
+      regError.textContent = err.message || 'Registration failed'
+      regBtn.disabled = false
+      regBtn.textContent = 'Create Admin Account'
+    }
+  })
+</script>
+
+</body>
+</html>

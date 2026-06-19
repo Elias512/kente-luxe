@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://csajcdvwmmumhpuzpmuk.supabase.co">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>Analytics - Kente Luxe Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="../css/style.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+.admin-section { max-width: 1100px; margin: 4rem auto; padding: 0 1.5rem; }
+.admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+.admin-loading { text-align: center; padding: 3rem 0; color: var(--muted); }
+.charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+.chart-card { background: var(--dark-2); border: 1px solid rgba(201,168,76,0.1); padding: 1.5rem; }
+.chart-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 1rem; color: var(--cream); margin-bottom: 1rem; font-weight: 400; }
+.chart-card canvas { max-height: 280px; }
+.chart-card.full { grid-column: 1 / -1; }
+.chart-card.full canvas { max-height: 220px; }
+@media (max-width: 768px) { .charts-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="kente-line"></div>
+<nav>
+  <a href="../index.html" class="nav-logo">Kente <span>Luxe</span></a>
+  <ul class="nav-links">
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="orders.html">Orders</a></li>
+    <li><a href="products.html">Products</a></li>
+    <li><a href="customers.html">Customers</a></li>
+    <li><a href="reviews.html">Reviews</a></li>
+    <li><a href="analytics.html" class="active">Analytics</a></li>
+  </ul>
+  <div class="nav-actions">
+    <span id="admin-email-display" style="font-size:0.78rem;color:var(--muted);"></span>
+    <a href="profile.html" style="font-size:0.78rem;color:var(--gold);text-decoration:none;margin-right:0.8rem;">Profile</a>
+    <button class="btn-outline-kl" id="admin-signout-btn" style="padding:0.4rem 1rem;font-size:0.72rem;">Sign Out</button>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+</nav>
+<section class="admin-section">
+  <div class="admin-header">
+    <h1 class="section-title" style="margin-bottom:0;">Analytics</h1>
+  </div>
+  <div id="analytics-loading" class="admin-loading">Loading analytics...</div>
+  <div id="analytics-content" style="display:none;">
+    <div class="charts-grid">
+      <div class="chart-card full">
+        <h3>Revenue (Last 30 Days)</h3>
+        <canvas id="revenue-chart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Orders by Status</h3>
+        <canvas id="status-chart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Top Products</h3>
+        <canvas id="products-chart"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+<footer>
+  <div class="kente-line" style="margin-bottom:1.5rem;"></div>
+  <div class="footer-bottom" style="padding:0 1.5rem 1.5rem;">
+    <p>&copy; <span id="copyright-year"></span> Kente Luxe. All rights reserved.</p>
+    <script>document.getElementById('copyright-year').textContent = new Date().getFullYear()</script>
+    <p>Crafted with pride in Ghana &#x1F1EC;&#x1F1ED;</p>
+  </div>
+</footer>
+<script type="module">
+  import { supabase } from '../js/supabase.js'
+  import { requireManager, adminSignOut, formatCurrency } from '../js/admin.js'
+
+  await requireManager()
+  document.getElementById('admin-signout-btn').addEventListener('click', adminSignOut)
+
+  const loadingEl = document.getElementById('analytics-loading')
+  const contentEl = document.getElementById('analytics-content')
+
+  try {
+    const [dailyRev, statuses, topProducts] = await Promise.all([
+      supabase.rpc('get_daily_revenue', { days: 30 }),
+      supabase.rpc('get_orders_by_status'),
+      supabase.rpc('get_top_products', { limit_count: 10 }),
+    ])
+
+    if (dailyRev.error) throw dailyRev.error
+    if (statuses.error) throw statuses.error
+    if (topProducts.error) throw topProducts.error
+
+    const gold = '#C9A84C'
+    const goldFaded = 'rgba(201,168,76,0.2)'
+    const cream = '#F5EDE3'
+    const muted = '#888880'
+
+    // Revenue line chart
+    const revData = dailyRev.data || []
+    new Chart(document.getElementById('revenue-chart'), {
+      type: 'line',
+      data: {
+        labels: revData.map(r => r.date ? new Date(r.date).toLocaleDateString('en-GB', { day:'numeric', month:'short' }) : ''),
+        datasets: [{
+          data: revData.map(r => Number(r.revenue) || 0),
+          borderColor: gold,
+          backgroundColor: goldFaded,
+          fill: true,
+          tension: 0.3,
+          pointRadius: 3,
+          pointBackgroundColor: gold,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: muted, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+          y: { ticks: { color: muted, font: { size: 10 }, callback: v => 'GHS ' + v }, grid: { color: 'rgba(255,255,255,0.04)' } }
+        }
+      }
+    })
+
+    // Status doughnut chart
+    const statusData = statuses.data || []
+    const statusColors = {
+      pending: '#888880', confirmed: '#C9A84C', shipped: '#4A90D9', delivered: '#27AE60', cancelled: '#E74C3C'
+    }
+    new Chart(document.getElementById('status-chart'), {
+      type: 'doughnut',
+      data: {
+        labels: statusData.map(s => s.status.charAt(0).toUpperCase() + s.status.slice(1)),
+        datasets: [{
+          data: statusData.map(s => Number(s.count)),
+          backgroundColor: statusData.map(s => statusColors[s.status] || muted),
+          borderWidth: 0,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { color: cream, font: { size: 11 }, padding: 12 }
+          }
+        }
+      }
+    })
+
+    // Top products bar chart
+    const prodData = topProducts.data || []
+    new Chart(document.getElementById('products-chart'), {
+      type: 'bar',
+      data: {
+        labels: prodData.map(p => p.name.length > 18 ? p.name.slice(0, 18) + '...' : p.name),
+        datasets: [{
+          data: prodData.map(p => Number(p.total_revenue) || 0),
+          backgroundColor: goldFaded,
+          borderColor: gold,
+          borderWidth: 1,
+          borderRadius: 2,
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: muted, font: { size: 9 }, callback: v => 'GHS ' + v }, grid: { color: 'rgba(255,255,255,0.04)' } },
+          y: { ticks: { color: cream, font: { size: 9 } }, grid: { display: false } }
+        }
+      }
+    })
+
+    loadingEl.style.display = 'none'
+    contentEl.style.display = ''
+  } catch (e) {
+    loadingEl.textContent = 'Failed to load analytics.'
+    console.error(e)
+  }
+</script>
+</body>
+</html>

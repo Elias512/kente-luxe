@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://csajcdvwmmumhpuzpmuk.supabase.co">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>Custom Order - Kente Luxe</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="kente-line"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">Kente <span>Luxe</span></a>
+  <ul class="nav-links">
+    <li><a href="shop.html">Shop</a></li>
+    <li><a href="lookbook.html">Lookbook</a></li>
+    <li><a href="custom-order.html">Custom Order</a></li>
+    <li><a href="our-story.html">Our Story</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="nav-login-link">Login</a>
+    <a href="cart.html" class="cart-btn">Cart <span class="cart-count">0</span></a>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+</nav>
+
+<!-- HEADER -->
+<section class="custom-order-header">
+  <div class="section-label">Bespoke Service</div>
+  <h1 class="section-title" style="margin-bottom: 0.5rem;">Commission a <em>Custom Piece</em></h1>
+  <p class="custom-order-intro">Work directly with our master weavers and artisans to create a one-of-a-kind garment tailored to your vision.</p>
+</section>
+
+<!-- CONTENT -->
+<section class="custom-order-section">
+
+  <!-- PROCESS PANEL -->
+  <div class="custom-order-process">
+    <h3>The Process</h3>
+    <div class="process-step">
+      <div class="process-step-number">1</div>
+      <div class="process-step-content">
+        <h4>Consultation</h4>
+        <p>Tell us your vision, occasion, and preferences. Our team reviews your request within 48 hours.</p>
+      </div>
+    </div>
+    <div class="process-step">
+      <div class="process-step-number">2</div>
+      <div class="process-step-content">
+        <h4>Design &amp; Quote</h4>
+        <p>We create a custom design concept with fabric samples and provide a detailed quote for your approval.</p>
+      </div>
+    </div>
+    <div class="process-step">
+      <div class="process-step-number">3</div>
+      <div class="process-step-content">
+        <h4>Weaving &amp; Crafting</h4>
+        <p>Master artisans hand-weave and tailor your piece using traditional techniques and premium materials.</p>
+      </div>
+    </div>
+    <div class="process-step">
+      <div class="process-step-number">4</div>
+      <div class="process-step-content">
+        <h4>Fitting &amp; Delivery</h4>
+        <p>We arrange a fitting session and deliver the final piece to your door, anywhere in the world.</p>
+      </div>
+    </div>
+    <div class="process-cta">
+      <p>Typical turnaround: <strong>3–6 weeks</strong></p>
+    </div>
+  </div>
+
+  <!-- ORDER FORM -->
+  <div class="custom-order-form-wrapper">
+    <div class="checkout-form-header">
+      <h3>Request a Custom Order</h3>
+    </div>
+
+    <form id="custom-order-form" class="checkout-form" novalidate>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="custom_full_name">Full Name <span class="form-required">*</span></label>
+          <input type="text" id="custom_full_name" name="full_name" class="form-input" placeholder="Your full name" required>
+          <div class="form-error" style="display: none;"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="custom_email">Email <span class="form-required">*</span></label>
+          <input type="email" id="custom_email" name="email" class="form-input" placeholder="your@email.com" required>
+          <div class="form-error" style="display: none;"></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="custom_phone">Phone <span class="form-required">*</span></label>
+        <input type="tel" id="custom_phone" name="phone" class="form-input" placeholder="+233 XX XXX XXXX" required>
+        <div class="form-error" style="display: none;"></div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="garment_type">Garment Type <span class="form-required">*</span></label>
+          <select id="garment_type" name="garment_type" class="form-select" required>
+            <option value="">Select garment type</option>
+            <option value="Dress">Dress</option>
+            <option value="Two-Piece Set">Two-Piece Set</option>
+            <option value="Agbada">Agbada</option>
+            <option value="Kaba &amp; Slit">Kaba &amp; Slit</option>
+            <option value="Shirt">Shirt</option>
+            <option value="Jumpsuit">Jumpsuit</option>
+            <option value="Skirt">Skirt</option>
+            <option value="Jacket">Jacket</option>
+            <option value="Other">Other</option>
+          </select>
+          <div class="form-error" style="display: none;"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="fabric_preference">Fabric Preference <span class="form-required">*</span></label>
+          <select id="fabric_preference" name="fabric_preference" class="form-select" required>
+            <option value="">Select fabric</option>
+            <option value="Kente">Kente</option>
+            <option value="Ankara">Ankara</option>
+            <option value="Smock">Smock</option>
+            <option value="Batik">Batik</option>
+            <option value="Mixed">Mixed</option>
+            <option value="Not Sure">Not Sure</option>
+          </select>
+          <div class="form-error" style="display: none;"></div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="custom_occasion">Occasion <span class="form-required">*</span></label>
+          <select id="custom_occasion" name="occasion" class="form-select" required>
+            <option value="">Select occasion</option>
+            <option value="Wedding">Wedding</option>
+            <option value="Festival">Festival</option>
+            <option value="Formal">Formal</option>
+            <option value="Casual">Casual</option>
+            <option value="Other">Other</option>
+          </select>
+          <div class="form-error" style="display: none;"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="custom_gender">Gender <span class="form-required">*</span></label>
+          <select id="custom_gender" name="gender" class="form-select" required>
+            <option value="">Select gender</option>
+            <option value="Women">Women</option>
+            <option value="Men">Men</option>
+            <option value="Unisex">Unisex</option>
+          </select>
+          <div class="form-error" style="display: none;"></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="colors">Preferred Colors / Patterns</label>
+        <input type="text" id="colors" name="colors" class="form-input" placeholder="e.g. Gold and black, traditional kente patterns">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="budget_range">Budget Range <span class="form-required">*</span></label>
+          <select id="budget_range" name="budget_range" class="form-select" required>
+            <option value="">Select budget range</option>
+            <option value="Under GHS 500">Under GHS 500</option>
+            <option value="GHS 500 – 1,000">GHS 500 – 1,000</option>
+            <option value="GHS 1,000 – 2,000">GHS 1,000 – 2,000</option>
+            <option value="GHS 2,000+">GHS 2,000+</option>
+          </select>
+          <div class="form-error" style="display: none;"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="custom_deadline">Deadline</label>
+          <input type="date" id="custom_deadline" name="deadline" class="form-input">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="custom_description">Description &amp; Special Instructions <span class="form-required">*</span></label>
+        <textarea id="custom_description" name="description" class="form-textarea" placeholder="Describe your vision — desired style, fit, colors, patterns, embellishments, and any reference images you have in mind..." required></textarea>
+        <div class="form-error" style="display: none;"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="measurement_notes">Measurement / Inspiration Notes</label>
+        <textarea id="measurement_notes" name="measurement_notes" class="form-textarea" placeholder="Share any measurements, reference links, or inspiration images. Our team will follow up for detailed measurements."></textarea>
+      </div>
+
+      <div class="custom-order-error" id="custom-order-error" style="display: none;"></div>
+
+      <button type="submit" class="btn-primary-kl checkout-submit-btn" id="custom-order-submit">
+        <span class="checkout-spinner" id="custom-order-spinner" style="display: none;"></span>
+        <span id="custom-order-btn-text">Submit Request</span>
+      </button>
+    </form>
+
+    <!-- SUCCESS -->
+    <div class="checkout-success" id="custom-order-success" style="display: none;">
+      <div class="checkout-success-icon">✓</div>
+      <h2>Request Submitted!</h2>
+      <p>Thank you for your interest in a custom piece. Our team will review your request and contact you within <strong>48 hours</strong> to discuss the next steps.</p>
+      <p class="checkout-success-text">We're excited to bring your vision to life.</p>
+      <a href="shop.html" class="btn-primary-kl">Browse Collections</a>
+    </div>
+  </div>
+
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="index.html" class="nav-logo">Kente <span>Luxe</span></a>
+      <p>Premium African heritage fashion for the global stage. Wear your roots. Own your story.</p>
+      <div class="newsletter">
+        <input type="email" id="newsletter-email" placeholder="Your email address">
+        <button id="newsletter-btn">Subscribe</button>
+      </div>
+      <div id="newsletter-msg" style="font-size:0.8rem;margin-top:0.5rem;color:var(--gold);"></div>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="our-story.html">Our Story</a></li>
+        <li><a href="custom-order.html">Custom Orders</a></li>
+        <li><a href="shipping.html">Shipping & Returns</a></li>
+        <li><a href="contact.html">Contact Us</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="kente-line" style="margin-bottom:1.5rem;"></div>
+  <div class="footer-bottom">
+    <p>&copy; <span id="copyright-year"></span> Kente Luxe. All rights reserved.</p>
+    <script>document.getElementById('copyright-year').textContent = new Date().getFullYear()</script>
+    <p>Crafted with pride in Ghana &#x1F1EC;&#x1F1ED;</p>
+  </div>
+</footer>
+
+<script type="module">
+  import { initCustomOrder } from './js/custom-order.js'
+  import { initNavbarCart } from './js/cart.js'
+  import { initAuth } from './js/auth.js'
+
+  const navToggle = document.querySelector('.nav-toggle')
+  const navLinks = document.querySelector('.nav-links')
+  if (navToggle && navLinks) {
+    navToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open')
+    })
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('nav')) {
+        navLinks.classList.remove('open')
+      }
+    })
+  }
+
+  initCustomOrder()
+  initNavbarCart()
+  initAuth()
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var btn = document.getElementById('newsletter-btn')
+  var input = document.getElementById('newsletter-email')
+  var msg = document.getElementById('newsletter-msg')
+  if (!btn || !input) return
+  btn.addEventListener('click', async function () {
+    var email = input.value.trim()
+    if (!email) { msg.textContent = 'Please enter your email.'; return }
+    msg.textContent = 'Subscribing...'
+    btn.disabled = true
+    try {
+      var r = await fetch('https://csajcdvwmmumhpuzpmuk.supabase.co/rest/v1/newsletter_subscriptions', {
+        method: 'POST',
+        headers: {
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzYWpjZHZ3bW11bWhwdXpwbXVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjA3NjIsImV4cCI6MjA5NjMzNjc2Mn0.A1e_7yMdgm9Yfs4LoZvMH6MAGo_dtxTkRisePjOPl5k',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzYWpjZHZ3bW11bWhwdXpwbXVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjA3NjIsImV4cCI6MjA5NjMzNjc2Mn0.A1e_7yMdgm9Yfs4LoZvMH6MAGo_dtxTkRisePjOPl5k',
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({ email: email })
+      })
+      if (r.ok) {
+        msg.textContent = 'Thanks for subscribing!'
+        input.value = ''
+      } else {
+        var d = await r.json()
+        if (d.code === '23505') msg.textContent = 'This email is already subscribed.'
+        else msg.textContent = 'Error: ' + (d.message || d.details || r.status)
+      }
+    } catch (e) {
+      msg.textContent = 'Error: ' + e.message
+    }
+    btn.disabled = false
+  })
+})
+</script>
+</body>
+</html>

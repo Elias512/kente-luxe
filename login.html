@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://csajcdvwmmumhpuzpmuk.supabase.co">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>Login - Kente Luxe</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="kente-line"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">Kente <span>Luxe</span></a>
+  <ul class="nav-links">
+    <li><a href="shop.html">Shop</a></li>
+    <li><a href="lookbook.html">Lookbook</a></li>
+    <li><a href="custom-order.html">Custom Order</a></li>
+    <li><a href="our-story.html">Our Story</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="login.html" class="nav-login-link">Login</a>
+    <a href="cart.html" class="cart-btn">Cart <span class="cart-count">0</span></a>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+</nav>
+
+<!-- LOGIN SECTION -->
+<section class="auth-section">
+  <h1 class="section-title" id="auth-title">Welcome <em>Back</em></h1>
+
+  <!-- LOGIN FORM -->
+  <form class="auth-form" id="login-form">
+    <div class="form-group">
+      <label class="form-label" for="login-email">Email</label>
+      <input class="form-input" type="email" id="login-email" required autocomplete="email" placeholder="your@email.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="login-password">Password</label>
+      <div class="password-input-wrapper">
+        <input class="form-input" type="password" id="login-password" required autocomplete="current-password" placeholder="********">
+        <button type="button" class="password-toggle" aria-label="Toggle password visibility" data-target="login-password">Show</button>
+      </div>
+    </div>
+    <div class="form-error" id="login-error"></div>
+    <button type="submit" class="btn-primary-kl auth-submit" id="login-submit">Sign In</button>
+    <p class="auth-toggle-text">
+      Don't have an account? <a href="#" id="show-signup" class="auth-toggle-link">Create one</a>
+    </p>
+  </form>
+
+  <!-- SIGNUP FORM -->
+  <form class="auth-form" id="signup-form" style="display: none;">
+    <div class="form-group">
+      <label class="form-label" for="signup-name">Full Name</label>
+      <input class="form-input" type="text" id="signup-name" required autocomplete="name" placeholder="Your full name">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="signup-email">Email</label>
+      <input class="form-input" type="email" id="signup-email" required autocomplete="email" placeholder="your@email.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="signup-password">Password</label>
+      <div class="password-input-wrapper">
+        <input class="form-input" type="password" id="signup-password" required minlength="6" autocomplete="new-password" placeholder="At least 6 characters">
+        <button type="button" class="password-toggle" aria-label="Toggle password visibility" data-target="signup-password">Show</button>
+      </div>
+    </div>
+    <div class="form-error" id="signup-error"></div>
+    <button type="submit" class="btn-primary-kl auth-submit" id="signup-submit">Create Account</button>
+    <p class="auth-toggle-text">
+      Already have an account? <a href="#" id="show-login" class="auth-toggle-link">Sign in</a>
+    </p>
+  </form>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="index.html" class="nav-logo">Kente <span>Luxe</span></a>
+      <p>Premium African heritage fashion for the global stage. Wear your roots. Own your story.</p>
+      <div class="newsletter">
+        <input type="email" id="newsletter-email" placeholder="Your email address">
+        <button id="newsletter-btn">Subscribe</button>
+      </div>
+      <div id="newsletter-msg" style="font-size:0.8rem;margin-top:0.5rem;color:var(--gold);"></div>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="our-story.html">Our Story</a></li>
+        <li><a href="custom-order.html">Custom Orders</a></li>
+        <li><a href="shipping.html">Shipping & Returns</a></li>
+        <li><a href="contact.html">Contact Us</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="kente-line" style="margin-bottom:1.5rem;"></div>
+  <div class="footer-bottom">
+    <p>&copy; <span id="copyright-year"></span> Kente Luxe. All rights reserved.</p>
+    <script>document.getElementById('copyright-year').textContent = new Date().getFullYear()</script>
+    <p>Crafted with pride in Ghana &#x1F1EC;&#x1F1ED;</p>
+  </div>
+</footer>
+
+<script type="module">
+  import { signIn, signUp, initAuth, getCurrentUser } from './js/auth.js'
+  import { initNavbarCart } from './js/cart.js'
+
+  const navToggle = document.querySelector('.nav-toggle')
+  const navLinks = document.querySelector('.nav-links')
+  if (navToggle && navLinks) {
+    navToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open')
+    })
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('nav')) {
+        navLinks.classList.remove('open')
+      }
+    })
+  }
+
+  const searchParams = new URLSearchParams(window.location.search)
+  const returnUrl = searchParams.get('return') || '/account.html'
+
+  getCurrentUser().then(user => {
+    if (user) window.location.href = returnUrl
+  })
+
+  const loginForm = document.getElementById('login-form')
+  const signupForm = document.getElementById('signup-form')
+  const loginError = document.getElementById('login-error')
+  const signupError = document.getElementById('signup-error')
+  const authTitle = document.getElementById('auth-title')
+
+  function showForm(form) {
+    if (form === 'signup') {
+      loginForm.style.display = 'none'
+      signupForm.style.display = ''
+      authTitle.innerHTML = 'Join <em>Us</em>'
+      signupError.textContent = ''
+      loginError.textContent = ''
+    } else {
+      signupForm.style.display = 'none'
+      loginForm.style.display = ''
+      authTitle.innerHTML = 'Welcome <em>Back</em>'
+      signupError.textContent = ''
+      loginError.textContent = ''
+    }
+  }
+
+  document.getElementById('show-signup').addEventListener('click', (e) => {
+    e.preventDefault()
+    showForm('signup')
+  })
+
+  document.getElementById('show-login').addEventListener('click', (e) => {
+    e.preventDefault()
+    showForm('login')
+  })
+
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault()
+    loginError.textContent = ''
+    document.getElementById('login-submit').disabled = true
+
+    try {
+      await signIn(
+        document.getElementById('login-email').value,
+        document.getElementById('login-password').value
+      )
+      window.location.href = returnUrl
+    } catch (err) {
+      loginError.textContent = err.message || 'Invalid email or password'
+      document.getElementById('login-submit').disabled = false
+    }
+  })
+
+  signupForm.addEventListener('submit', async (e) => {
+    e.preventDefault()
+    signupError.textContent = ''
+    document.getElementById('signup-submit').disabled = true
+
+    try {
+      await signUp(
+        document.getElementById('signup-email').value,
+        document.getElementById('signup-password').value,
+        document.getElementById('signup-name').value
+      )
+      signupError.textContent = 'Check your email to confirm your account!'
+      signupError.style.color = '#4CAF50'
+      document.getElementById('signup-submit').disabled = false
+    } catch (err) {
+      signupError.textContent = err.message || 'Sign up failed'
+      signupError.style.color = '#e74c3c'
+      document.getElementById('signup-submit').disabled = false
+    }
+  })
+
+  // Password visibility toggle
+  document.querySelectorAll('.password-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const input = document.getElementById(btn.dataset.target)
+      const isPassword = input.type === 'password'
+      input.type = isPassword ? 'text' : 'password'
+      btn.textContent = isPassword ? 'Hide' : 'Show'
+    })
+  })
+
+  initNavbarCart()
+  initAuth()
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var btn = document.getElementById('newsletter-btn')
+  var input = document.getElementById('newsletter-email')
+  var msg = document.getElementById('newsletter-msg')
+  if (!btn || !input) return
+  btn.addEventListener('click', async function () {
+    var email = input.value.trim()
+    if (!email) { msg.textContent = 'Please enter your email.'; return }
+    msg.textContent = 'Subscribing...'
+    btn.disabled = true
+    try {
+      var r = await fetch('https://csajcdvwmmumhpuzpmuk.supabase.co/rest/v1/newsletter_subscriptions', {
+        method: 'POST',
+        headers: {
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzYWpjZHZ3bW11bWhwdXpwbXVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjA3NjIsImV4cCI6MjA5NjMzNjc2Mn0.A1e_7yMdgm9Yfs4LoZvMH6MAGo_dtxTkRisePjOPl5k',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzYWpjZHZ3bW11bWhwdXpwbXVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjA3NjIsImV4cCI6MjA5NjMzNjc2Mn0.A1e_7yMdgm9Yfs4LoZvMH6MAGo_dtxTkRisePjOPl5k',
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({ email: email })
+      })
+      if (r.ok) {
+        msg.textContent = 'Thanks for subscribing!'
+        input.value = ''
+      } else {
+        var d = await r.json()
+        if (d.code === '23505') msg.textContent = 'This email is already subscribed.'
+        else msg.textContent = 'Error: ' + (d.message || d.details || r.status)
+      }
+    } catch (e) {
+      msg.textContent = 'Error: ' + e.message
+    }
+    btn.disabled = false
+  })
+})
+</script>
+</body>
+</html>
