@@ -146,3 +146,6 @@ vite.config.ts.timestamp-*
 
 # Upload scripts (contains service role key)
 scripts/
+.env
+.wrangler/
+wrangler.jsonc
