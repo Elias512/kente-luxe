@@ -6,9 +6,18 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://csajcdvwmmumhpuzpmuk.supabase.co">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<title>Cart - Kente Luxe</title>
+<title>Shipping & Returns - Kente Luxe</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <link href="css/style.css" rel="stylesheet">
+<style>
+.info-section { max-width: 720px; margin: 4rem auto; padding: 0 1.5rem; }
+.info-section h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--cream); margin: 2rem 0 0.8rem; }
+.info-section h2:first-of-type { margin-top: 2.5rem; }
+.info-section p { font-size: 0.9rem; color: var(--text); line-height: 1.7; margin-bottom: 0.8rem; }
+.info-section ul { margin: 0 0 1rem 1.5rem; }
+.info-section li { font-size: 0.9rem; color: var(--text); line-height: 1.7; }
+.info-section .highlight { color: var(--gold); }
+</style>
 </head>
 <body>
 
@@ -24,52 +33,50 @@
   </ul>
   <div class="nav-actions">
     <a href="login.html" class="nav-login-link">Login</a>
-    <button class="cart-btn">Cart <span class="cart-count">0</span></button>
+    <a href="cart.html" class="cart-btn">Cart <span class="cart-count">0</span></a>
   </div>
   <button class="nav-toggle" aria-label="Toggle menu">☰</button>
 </nav>
 
-<!-- CART HEADER -->
-<section class="cart-header">
-  <a href="shop.html" class="cart-back">← Continue Shopping</a>
-  <h1 class="section-title" style="margin: 0;">Your <em>Cart</em></h1>
+<section class="info-section">
+  <div class="section-label">Policies</div>
+  <h1 class="section-title">Shipping & <em>Returns</em></h1>
+
+  <h2>Shipping Information</h2>
+  <p>We ship worldwide from Ghana. All orders are carefully packaged and dispatched within <span class="highlight">2–5 business days</span> after payment confirmation. Custom orders may require additional production time depending on complexity.</p>
+  <p>Delivery times vary by location:</p>
+  <ul>
+    <li><strong>Ghana</strong> — 2–4 business days via door-to-door courier</li>
+    <li><strong>Africa (other countries)</strong> — 5–10 business days</li>
+    <li><strong>Europe & UK</strong> — 7–14 business days</li>
+    <li><strong>North America</strong> — 10–18 business days</li>
+    <li><strong>Rest of the World</strong> — 10–20 business days</li>
+  </ul>
+  <p>Shipping costs are calculated at checkout based on your delivery location and order weight. A tracking number will be provided once your order is dispatched.</p>
+
+  <h2>Customs & Duties</h2>
+  <p>International orders may be subject to import duties, taxes, and customs clearance fees imposed by the destination country. These charges are the responsibility of the customer and are not included in the shipping cost. We recommend checking with your local customs office before placing an order.</p>
+
+  <h2>Returns & Exchanges</h2>
+  <p>We want you to love your Kente Luxe piece. If you are not completely satisfied, you may return unworn items within <span class="highlight">14 days</span> of delivery for a refund or exchange.</p>
+  <p>To be eligible, items must:</p>
+  <ul>
+    <li>Be unworn, unwashed, and in original condition</li>
+    <li>Include all tags and packaging</li>
+    <li>Be returned within 14 days of delivery</li>
+  </ul>
+  <p>Custom and made-to-order pieces are <span class="highlight">non-returnable</span> unless defective. Please contact us before returning any item.</p>
+
+  <h2>Refund Process</h2>
+  <p>Once your return is received and inspected, we will notify you of the approval or rejection of your refund. Approved refunds will be processed within <span class="highlight">5–7 business days</span> and credited back to your original payment method.</p>
+
+  <h2>Damaged or Defective Items</h2>
+  <p>If your order arrives damaged or defective, please contact us within <span class="highlight">48 hours</span> of delivery with photos of the issue. We will arrange a replacement or full refund at no additional cost to you.</p>
+
+  <h2>Contact</h2>
+  <p>For any shipping or returns inquiries, reach out to us at <a href="contact.html" style="color:var(--gold);">our contact page</a> or email us directly.</p>
 </section>
 
-<!-- CART CONTENT -->
-<section class="cart-section">
-
-  <!-- EMPTY CART STATE -->
-  <div class="cart-empty" id="cart-empty">
-    <div class="cart-empty-icon">🛒</div>
-    <h2 class="cart-empty-title">Your cart is empty</h2>
-    <p class="cart-empty-text">Looks like you haven't found your perfect piece yet. Explore our collections — every thread tells a story.</p>
-    <a href="shop.html" class="btn-primary-kl">Browse Collections</a>
-  </div>
-
-  <!-- CART ITEMS -->
-  <div class="cart-items" id="cart-items">
-    <!-- Rendered by cart.js -->
-  </div>
-
-  <!-- CART SUMMARY -->
-  <div class="cart-summary" id="cart-summary" style="display: none;">
-    <div class="cart-summary-header">
-      <h3>Order Summary</h3>
-      <span id="cart-item-count">0 items</span>
-    </div>
-    <div class="cart-summary-row">
-      <span>Subtotal</span>
-      <span class="cart-summary-total" id="cart-subtotal">GHS 0</span>
-    </div>
-    <div class="cart-summary-note">
-      Taxes and shipping calculated at checkout
-    </div>
-    <a href="checkout.html" class="btn-primary-kl" id="checkout-btn">Proceed to Checkout</a>
-  </div>
-
-</section>
-
-<!-- FOOTER -->
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
@@ -100,10 +107,9 @@
 </footer>
 
 <script type="module">
-  import { renderCart, initNavbarCart } from './js/cart.js'
   import { initAuth } from './js/auth.js'
-  
-  // Navigation toggle
+  import { initNavbarCart } from './js/cart.js'
+
   const navToggle = document.querySelector('.nav-toggle')
   const navLinks = document.querySelector('.nav-links')
   if (navToggle && navLinks) {
@@ -116,12 +122,10 @@
       }
     })
   }
-  
-  renderCart()
+
   initNavbarCart()
   initAuth()
 </script>
-
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {

@@ -42,9 +42,13 @@
     <li><a href="dashboard.html">Dashboard</a></li>
     <li><a href="orders.html" class="active">Orders</a></li>
     <li><a href="products.html">Products</a></li>
+    <li><a href="customers.html">Customers</a></li>
+    <li><a href="reviews.html">Reviews</a></li>
+    <li><a href="analytics.html">Analytics</a></li>
   </ul>
   <div class="nav-actions">
     <span id="admin-email-display" style="font-size:0.78rem;color:var(--muted);"></span>
+    <a href="profile.html" style="font-size:0.78rem;color:var(--gold);text-decoration:none;margin-right:0.8rem;">Profile</a>
     <button class="btn-outline-kl" id="admin-signout-btn" style="padding:0.4rem 1rem;font-size:0.72rem;">Sign Out</button>
   </div>
   <button class="nav-toggle" aria-label="Toggle menu">☰</button>
@@ -220,6 +224,15 @@
 
   loadOrders()
 </script>
+
+<footer>
+  <div class="kente-line" style="margin-bottom:1.5rem;"></div>
+  <div class="footer-bottom" style="padding:0 1.5rem 1.5rem;">
+    <p>&copy; <span id="copyright-year"></span> Kente Luxe. All rights reserved.</p>
+    <script>document.getElementById('copyright-year').textContent = new Date().getFullYear()</script>
+    <p>Crafted with pride in Ghana &#x1F1EC;&#x1F1ED;</p>
+  </div>
+</footer>
 
 </body>
 </html>

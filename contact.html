@@ -6,9 +6,28 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://csajcdvwmmumhpuzpmuk.supabase.co">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<title>Cart - Kente Luxe</title>
+<title>Contact Us - Kente Luxe</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <link href="css/style.css" rel="stylesheet">
+<style>
+.contact-section { max-width: 900px; margin: 4rem auto; padding: 0 1.5rem; }
+
+.contact-list { display: flex; flex-direction: column; gap: 0; max-width: 600px; margin: 3rem auto 0; }
+.contact-item { display: flex; align-items: center; gap: 1.5rem; padding: 1.4rem 0; border-bottom: 1px solid rgba(201,168,76,0.15); }
+.contact-item:last-child { border-bottom: none; }
+.contact-item .icon { width: 2.4rem; text-align: center; font-size: 1.2rem; color: var(--gold); flex-shrink: 0; }
+.contact-item .info { flex: 1; }
+.contact-item .label { font-family: 'Jost', sans-serif; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold); margin-bottom: 0.15rem; }
+.contact-item .value { font-family: 'Jost', sans-serif; font-size: 0.9rem; color: var(--cream); line-height: 1.5; }
+.contact-item .value a { color: var(--cream); text-decoration: none; transition: color 0.2s; }
+.contact-item .value a:hover { color: var(--gold); }
+
+.social-row { display: flex; gap: 1rem; margin-top: 0.3rem; }
+.social-row a { display: inline-flex; align-items: center; gap: 0.4rem; font-family: 'Jost', sans-serif; font-size: 0.85rem; color: var(--cream); text-decoration: none; padding: 0.3rem 0.8rem; border: 1px solid rgba(201,168,76,0.25); transition: all 0.2s; }
+.social-row a:hover { border-color: var(--gold); color: var(--gold); }
+
+.contact-note { text-align: center; margin-top: 2.5rem; font-size: 0.8rem; color: var(--text); font-style: italic; max-width: 480px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+</style>
 </head>
 <body>
 
@@ -24,52 +43,66 @@
   </ul>
   <div class="nav-actions">
     <a href="login.html" class="nav-login-link">Login</a>
-    <button class="cart-btn">Cart <span class="cart-count">0</span></button>
+    <a href="cart.html" class="cart-btn">Cart <span class="cart-count">0</span></a>
   </div>
   <button class="nav-toggle" aria-label="Toggle menu">☰</button>
 </nav>
 
-<!-- CART HEADER -->
-<section class="cart-header">
-  <a href="shop.html" class="cart-back">← Continue Shopping</a>
-  <h1 class="section-title" style="margin: 0;">Your <em>Cart</em></h1>
-</section>
+<div class="contact-section">
+  <div class="section-label">Get in Touch</div>
+  <h1 class="section-title">Contact <em>Us</em></h1>
 
-<!-- CART CONTENT -->
-<section class="cart-section">
+  <div class="contact-list">
 
-  <!-- EMPTY CART STATE -->
-  <div class="cart-empty" id="cart-empty">
-    <div class="cart-empty-icon">🛒</div>
-    <h2 class="cart-empty-title">Your cart is empty</h2>
-    <p class="cart-empty-text">Looks like you haven't found your perfect piece yet. Explore our collections — every thread tells a story.</p>
-    <a href="shop.html" class="btn-primary-kl">Browse Collections</a>
+    <div class="contact-item">
+      <div class="icon">&#9993;</div>
+      <div class="info">
+        <div class="label">Email</div>
+        <div class="value">
+          <a href="mailto:hello@kenteluxe.com">hello@kenteluxe.com</a> &nbsp;&middot;&nbsp;
+          <a href="mailto:orders@kenteluxe.com">orders@kenteluxe.com</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-item">
+      <div class="icon">&#9742;</div>
+      <div class="info">
+        <div class="label">Phone</div>
+        <div class="value">
+          <a href="tel:+233302123456">+233 30 212 3456</a> &nbsp;&middot;&nbsp;
+          <a href="tel:+233244123456">+233 24 412 3456</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-item">
+      <div class="icon">&#64;</div>
+      <div class="info">
+        <div class="label">Social Media</div>
+        <div class="value">
+          <div class="social-row">
+            <a href="https://instagram.com/kenteluxe" target="_blank">Instagram</a>
+            <a href="https://facebook.com/kenteluxe" target="_blank">Facebook</a>
+            <a href="https://wa.me/233302123456" target="_blank">WhatsApp</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-item">
+      <div class="icon">&#9873;</div>
+      <div class="info">
+        <div class="label">Visit Us</div>
+        <div class="value">Accra, Ghana &nbsp;&middot;&nbsp; Mon&ndash;Sat, 9AM&ndash;6PM</div>
+      </div>
+    </div>
+
   </div>
 
-  <!-- CART ITEMS -->
-  <div class="cart-items" id="cart-items">
-    <!-- Rendered by cart.js -->
-  </div>
+  <p class="contact-note">We typically respond within 48 hours. For urgent inquiries, please call or reach out on WhatsApp.</p>
+</div>
 
-  <!-- CART SUMMARY -->
-  <div class="cart-summary" id="cart-summary" style="display: none;">
-    <div class="cart-summary-header">
-      <h3>Order Summary</h3>
-      <span id="cart-item-count">0 items</span>
-    </div>
-    <div class="cart-summary-row">
-      <span>Subtotal</span>
-      <span class="cart-summary-total" id="cart-subtotal">GHS 0</span>
-    </div>
-    <div class="cart-summary-note">
-      Taxes and shipping calculated at checkout
-    </div>
-    <a href="checkout.html" class="btn-primary-kl" id="checkout-btn">Proceed to Checkout</a>
-  </div>
-
-</section>
-
-<!-- FOOTER -->
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
@@ -100,10 +133,9 @@
 </footer>
 
 <script type="module">
-  import { renderCart, initNavbarCart } from './js/cart.js'
   import { initAuth } from './js/auth.js'
-  
-  // Navigation toggle
+  import { initNavbarCart } from './js/cart.js'
+
   const navToggle = document.querySelector('.nav-toggle')
   const navLinks = document.querySelector('.nav-links')
   if (navToggle && navLinks) {
@@ -116,12 +148,10 @@
       }
     })
   }
-  
-  renderCart()
+
   initNavbarCart()
   initAuth()
 </script>
-
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {

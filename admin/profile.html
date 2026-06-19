@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://csajcdvwmmumhpuzpmuk.supabase.co">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>Profile - Kente Luxe Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="../css/style.css" rel="stylesheet">
+<style>
+.admin-section { max-width: 640px; margin: 4rem auto; padding: 0 1.5rem; }
+.profile-head { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px solid rgba(201,168,76,0.12); }
+.profile-avatar { width: 64px; height: 64px; border-radius: 50%; background: rgba(201,168,76,0.12); display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--gold); font-weight: 600; flex-shrink: 0; border: 1px solid rgba(201,168,76,0.2); }
+.profile-meta h1 { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; color: var(--cream); font-weight: 600; margin: 0 0 0.2rem; }
+.profile-meta .email { font-size: 0.82rem; color: var(--muted); }
+.profile-meta .role-badge { display: inline-block; margin-top: 0.4rem; padding: 0.2rem 0.7rem; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.2); color: var(--gold); }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+.card { background: var(--dark-2); border: 1px solid rgba(201,168,76,0.08); padding: 1.8rem; }
+.card h2 { font-family: 'Cormorant Garamond', serif; font-size: 1rem; color: var(--cream); font-weight: 400; margin: 0 0 1.2rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(201,168,76,0.08); }
+.field { margin-bottom: 1rem; }
+.field:last-child { margin-bottom: 0; }
+.field label { display: block; font-family: 'Jost', sans-serif; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.3rem; }
+.field .input-wrap { position: relative; }
+.field input { width: 100%; padding: 0.7rem 0.9rem; background: transparent; border: 1px solid rgba(201,168,76,0.15); color: var(--cream); font-family: 'Jost', sans-serif; font-size: 0.88rem; transition: border-color 0.2s; }
+.field input:focus { outline: none; border-color: var(--gold); }
+.field input:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-save { width: 100%; padding: 0.7rem; background: var(--gold); color: #000; border: none; font-family: 'Jost', sans-serif; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; transition: opacity 0.2s; margin-top: 0.8rem; }
+.btn-save:hover { opacity: 0.9; }
+.btn-save:disabled { opacity: 0.4; cursor: not-allowed; }
+.msg { margin-top: 0.7rem; font-size: 0.8rem; display: flex; align-items: center; gap: 0.4rem; }
+.msg.success { color: #27AE60; }
+.msg.error { color: #E74C3C; }
+.msg.info { color: var(--gold); }
+@media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="kente-line"></div>
+<nav>
+  <a href="../index.html" class="nav-logo">Kente <span>Luxe</span></a>
+  <ul class="nav-links">
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="orders.html">Orders</a></li>
+    <li><a href="products.html">Products</a></li>
+    <li><a href="customers.html">Customers</a></li>
+    <li><a href="reviews.html">Reviews</a></li>
+    <li><a href="analytics.html">Analytics</a></li>
+  </ul>
+  <div class="nav-actions">
+    <span id="admin-email-display" style="font-size:0.78rem;color:var(--muted);"></span>
+    <a href="profile.html" style="font-size:0.78rem;color:var(--gold);text-decoration:none;margin-right:0.8rem;">Profile</a>
+    <button class="btn-outline-kl" id="admin-signout-btn" style="padding:0.4rem 1rem;font-size:0.72rem;">Sign Out</button>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+</nav>
+<section class="admin-section">
+  <div id="profile-loading" class="admin-loading">Loading...</div>
+  <div id="profile-content" style="display:none;">
+    <div class="profile-head">
+      <div class="profile-avatar" id="avatar-init"></div>
+      <div class="profile-meta">
+        <h1 id="prof-display-name"></h1>
+        <div class="email" id="prof-display-email"></div>
+        <span class="role-badge">Administrator</span>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h2>Account Details</h2>
+        <div class="field">
+          <label>Email</label>
+          <div class="input-wrap">
+            <input type="email" id="prof-email" disabled>
+          </div>
+        </div>
+        <div class="field">
+          <label>Full Name</label>
+          <div class="input-wrap">
+            <input type="text" id="prof-name" placeholder="Enter your full name">
+          </div>
+        </div>
+        <button class="btn-save" id="prof-save-name">Save Changes</button>
+        <div id="prof-name-msg" class="msg"></div>
+      </div>
+
+      <div class="card">
+        <h2>Change Password</h2>
+        <div class="field">
+          <label>New Password</label>
+          <div class="input-wrap">
+            <input type="password" id="prof-password" placeholder="Min. 6 characters">
+          </div>
+        </div>
+        <div class="field">
+          <label>Confirm Password</label>
+          <div class="input-wrap">
+            <input type="password" id="prof-confirm" placeholder="Repeat new password">
+          </div>
+        </div>
+        <button class="btn-save" id="prof-save-pw">Update Password</button>
+        <div id="prof-pw-msg" class="msg"></div>
+      </div>
+    </div>
+
+    <div class="card" style="border-color:rgba(231,76,60,0.2);">
+      <h2 style="color:#E74C3C;border-bottom-color:rgba(231,76,60,0.15);">Danger Zone</h2>
+      <p style="font-size:0.82rem;color:var(--muted);margin-bottom:1rem;">Permanently delete your admin account and all associated data. This cannot be undone.</p>
+      <button class="btn-save" id="prof-delete" style="background:#E74C3C;color:#fff;width:auto;padding:0.7rem 1.5rem;">Delete My Account</button>
+      <div id="prof-delete-msg" class="msg"></div>
+    </div>
+  </div>
+</section>
+<footer>
+  <div class="kente-line" style="margin-bottom:1.5rem;"></div>
+  <div class="footer-bottom" style="padding:0 1.5rem 1.5rem;">
+    <p>&copy; <span id="copyright-year"></span> Kente Luxe. All rights reserved.</p>
+    <script>document.getElementById('copyright-year').textContent = new Date().getFullYear()</script>
+    <p>Crafted with pride in Ghana &#x1F1EC;&#x1F1ED;</p>
+  </div>
+</footer>
+<script type="module">
+  import { supabase } from '../js/supabase.js'
+  import { requireManager, adminSignOut } from '../js/admin.js'
+
+  const auth = await requireManager()
+  if (!auth) throw new Error('Not authorized')
+
+  document.getElementById('admin-signout-btn').addEventListener('click', adminSignOut)
+  document.getElementById('admin-email-display').textContent = auth.user.email
+
+  const name = auth.manager.full_name || auth.user.email?.split('@')[0] || 'Admin'
+  document.getElementById('prof-display-name').textContent = name
+  document.getElementById('prof-display-email').textContent = auth.user.email
+  document.getElementById('avatar-init').textContent = name.charAt(0).toUpperCase()
+  document.getElementById('prof-email').value = auth.user.email
+  document.getElementById('prof-name').value = name
+
+  document.getElementById('profile-loading').style.display = 'none'
+  document.getElementById('profile-content').style.display = ''
+
+  function setMsg(id, text, type) {
+    const el = document.getElementById(id)
+    el.textContent = text
+    el.className = 'msg ' + type
+    setTimeout(() => { if (el.textContent === text) el.textContent = '' }, 4000)
+  }
+
+  document.getElementById('prof-save-name').addEventListener('click', async () => {
+    const btn = document.getElementById('prof-save-name')
+    const val = document.getElementById('prof-name').value.trim()
+    if (!val) { setMsg('prof-name-msg', 'Name cannot be empty.', 'error'); return }
+    btn.disabled = true
+    btn.textContent = 'Saving...'
+    const { error } = await supabase.rpc('update_manager_name', { new_name: val })
+    if (error) {
+      setMsg('prof-name-msg', error.message, 'error')
+    } else {
+      document.getElementById('prof-display-name').textContent = val
+      document.getElementById('avatar-init').textContent = val.charAt(0).toUpperCase()
+      setMsg('prof-name-msg', '\u2713 Name updated successfully.', 'success')
+    }
+    btn.disabled = false
+    btn.textContent = 'Save Changes'
+  })
+
+  document.getElementById('prof-save-pw').addEventListener('click', async () => {
+    const btn = document.getElementById('prof-save-pw')
+    const pw = document.getElementById('prof-password').value
+    const confirm = document.getElementById('prof-confirm').value
+    if (!pw || !confirm) { setMsg('prof-pw-msg', 'Fill in both fields.', 'error'); return }
+    if (pw !== confirm) { setMsg('prof-pw-msg', 'Passwords do not match.', 'error'); return }
+    if (pw.length < 6) { setMsg('prof-pw-msg', 'Must be at least 6 characters.', 'error'); return }
+    btn.disabled = true
+    btn.textContent = 'Updating...'
+    const { error } = await supabase.auth.updateUser({ password: pw })
+    if (error) {
+      setMsg('prof-pw-msg', error.message, 'error')
+    } else {
+      document.getElementById('prof-password').value = ''
+      document.getElementById('prof-confirm').value = ''
+      setMsg('prof-pw-msg', '\u2713 Password updated successfully.', 'success')
+    }
+    btn.disabled = false
+    btn.textContent = 'Update Password'
+  })
+
+  document.getElementById('prof-delete').addEventListener('click', async () => {
+    if (!confirm('Are you sure you want to delete your admin account? This cannot be undone.')) return
+    if (!confirm('This will permanently remove your access. Continue?')) return
+
+    const btn = document.getElementById('prof-delete')
+    btn.disabled = true
+    btn.textContent = 'Deleting...'
+
+    const { error } = await supabase.rpc('delete_my_account')
+    if (error) {
+      setMsg('prof-delete-msg', error.message, 'error')
+      btn.disabled = false
+      btn.textContent = 'Delete My Account'
+      return
+    }
+
+    await supabase.auth.signOut()
+    window.location.href = 'login.html'
+  })
+</script>
+</body>
+</html>
