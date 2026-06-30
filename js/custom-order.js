@@ -25,6 +25,9 @@ export function initCustomOrder() {
     const payload = {
       guest_id: getGuestId(),
       user_id: null,
+      full_name: formData.get('full_name'),
+      email: formData.get('email'),
+      phone: formData.get('phone'),
       fabric: formData.get('fabric_preference'),
       style: formData.get('garment_type'),
       measurements: formData.get('measurement_notes') || '',

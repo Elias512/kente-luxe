@@ -135,6 +135,9 @@ CREATE TABLE IF NOT EXISTS public.custom_orders (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   guest_id TEXT,
   user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  full_name TEXT,
+  email TEXT,
+  phone TEXT,
   fabric TEXT,
   style TEXT,
   measurements TEXT,
@@ -553,3 +556,17 @@ END;
 $$;
 
 GRANT EXECUTE ON FUNCTION public.reject_review TO authenticated;
+
+-- 17. Get newsletter subscriber count (admin)
+CREATE OR REPLACE FUNCTION public.get_newsletter_count()
+RETURNS INTEGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  RETURN (SELECT COUNT(*) FROM public.newsletter_subscriptions);
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.get_newsletter_count TO anon, authenticated;

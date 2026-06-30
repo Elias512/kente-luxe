@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://csajcdvwmmumhpuzpmuk.supabase.co">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>Custom Orders - Admin - Kente Luxe</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="../css/style.css" rel="stylesheet">
+<style>
+.admin-section { max-width: 1100px; margin: 4rem auto; padding: 0 1.5rem; }
+.admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+.admin-loading { text-align: center; padding: 3rem 0; color: var(--muted); }
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.data-table th { text-align: left; padding: 0.75rem 0.5rem; color: var(--muted); font-weight: 400; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; border-bottom: 1px solid rgba(201, 168, 76, 0.15); white-space: nowrap; }
+.data-table td { padding: 0.75rem 0.5rem; border-bottom: 1px solid rgba(201, 168, 76, 0.06); color: var(--text); vertical-align: middle; }
+.data-table tr:hover { background: rgba(201, 168, 76, 0.03); }
+.data-table .status-select { background: transparent; border: 1px solid rgba(201, 168, 76, 0.2); color: var(--text); padding: 0.3rem 0.5rem; font-family: 'Jost', sans-serif; font-size: 0.8rem; cursor: pointer; }
+.data-table .status-select:focus { outline: none; border-color: var(--gold); }
+.data-table .status-select option { background: var(--dark-3); color: var(--text); }
+.detail-toggle { background: none; border: none; color: var(--gold); cursor: pointer; font-family: 'Jost', sans-serif; font-size: 0.78rem; padding: 0; }
+.detail-toggle:hover { text-decoration: underline; }
+.detail-row { display: none; }
+.detail-row.visible { display: table-row; }
+.detail-cell { padding: 1rem 0.5rem; background: var(--dark-3); }
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; max-width: 800px; }
+.detail-grid h4 { font-family: 'Cormorant Garamond', serif; color: var(--gold); font-size: 0.9rem; margin-bottom: 0.3rem; }
+.detail-grid p { font-size: 0.82rem; color: var(--text); margin-bottom: 0.15rem; }
+.status-msg { font-size: 0.75rem; margin-left: 0.5rem; }
+.status-badge { display: inline-block; padding: 0.15rem 0.5rem; font-size: 0.72rem; border-radius: 2px; text-transform: uppercase; letter-spacing: 0.1em; }
+.status-received { background: rgba(100, 100, 200, 0.15); color: #8888cc; }
+.status-in-progress { background: rgba(201, 168, 76, 0.15); color: var(--gold); }
+.status-completed { background: rgba(76, 201, 120, 0.15); color: #4cc978; }
+.status-cancelled { background: rgba(200, 76, 76, 0.15); color: #e74c3c; }
+@media (max-width: 768px) { .data-table { font-size: 0.75rem; } .data-table th, .data-table td { padding: 0.5rem 0.3rem; } }
+</style>
+</head>
+<body>
+
+<div class="kente-line"></div>
+
+<nav>
+  <a href="../index.html" class="nav-logo">Kente <span>Luxe</span></a>
+  <ul class="nav-links">
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="orders.html">Orders</a></li>
+    <li><a href="products.html">Products</a></li>
+    <li><a href="customers.html">Customers</a></li>
+    <li><a href="custom-orders.html" class="active">Custom Orders</a></li>
+    <li><a href="reviews.html">Reviews</a></li>
+    <li><a href="analytics.html">Analytics</a></li>
+  </ul>
+  <div class="nav-actions">
+    <span id="admin-email-display" style="font-size:0.78rem;color:var(--muted);"></span>
+    <a href="profile.html" style="font-size:0.78rem;color:var(--gold);text-decoration:none;margin-right:0.8rem;">Profile</a>
+    <button class="btn-outline-kl" id="admin-signout-btn" style="padding:0.4rem 1rem;font-size:0.72rem;">Sign Out</button>
+  </div>
+  <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+</nav>
+
+<section class="admin-section">
+  <div class="admin-header">
+    <h1 class="section-title" style="margin-bottom:0;">Custom <em>Orders</em></h1>
+  </div>
+  <div id="custom-loading" class="admin-loading">Loading custom orders...</div>
+  <div id="custom-content" style="display:none;">
+    <div id="custom-total" style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem;"></div>
+    <div style="overflow-x:auto;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Date</th>
+            <th>Fabric</th>
+            <th>Style</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="custom-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<script type="module">
+  import { apiFetch } from '../js/cart.js'
+  import { requireManager, adminSignOut, formatDate } from '../js/admin.js'
+
+  const navToggle = document.querySelector('.nav-toggle')
+  const navLinks = document.querySelector('.nav-links')
+  if (navToggle && navLinks) {
+    navToggle.addEventListener('click', () => navLinks.classList.toggle('open'))
+    document.addEventListener('click', (e) => { if (!e.target.closest('nav')) navLinks.classList.remove('open') })
+  }
+
+  const auth = await requireManager()
+  if (!auth) throw new Error('Not authorized')
+
+  document.getElementById('admin-email-display').textContent = auth.user.email
+  document.getElementById('admin-signout-btn').addEventListener('click', adminSignOut)
+
+  const loadingEl = document.getElementById('custom-loading')
+  const contentEl = document.getElementById('custom-content')
+  const tbody = document.getElementById('custom-tbody')
+  const totalEl = document.getElementById('custom-total')
+
+  function statusBadge(status) {
+    const cls = `status-badge status-${(status || '').toLowerCase().replace(/\s+/g, '-')}`
+    return `<span class="${cls}">${status || 'received'}</span>`
+  }
+
+  async function updateStatus(id, newStatus) {
+    try {
+      await apiFetch(`custom_orders?id=eq.${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: newStatus })
+      })
+      return true
+    } catch (e) {
+      console.error('Status update failed:', e)
+      return false
+    }
+  }
+
+  async function loadOrders() {
+    loadingEl.style.display = ''
+    contentEl.style.display = 'none'
+
+    try {
+      const orders = await apiFetch('custom_orders?select=*&order=created_at.desc')
+      totalEl.textContent = `${orders.length} custom order(s)`
+
+      if (orders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--muted);">No custom orders yet.</td></tr>'
+      } else {
+        tbody.innerHTML = orders.map((o, i) => `
+          <tr>
+            <td>${i + 1}</td>
+            <td>${o.full_name || 'Guest'}</td>
+            <td>${o.phone || '—'}</td>
+            <td>${formatDate(o.created_at)}</td>
+            <td>${o.fabric || '—'}</td>
+            <td>${o.style || '—'}</td>
+            <td>
+              <select class="status-select" data-id="${o.id}" data-original="${o.status || 'received'}">
+                <option value="received" ${(o.status || 'received') === 'received' ? 'selected' : ''}>Received</option>
+                <option value="in-progress" ${o.status === 'in-progress' ? 'selected' : ''}>In Progress</option>
+                <option value="completed" ${o.status === 'completed' ? 'selected' : ''}>Completed</option>
+                <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+              </select>
+              <span class="status-msg" id="status-msg-${o.id}"></span>
+            </td>
+            <td>
+              <button class="detail-toggle" data-target="detail-${o.id}">Details</button>
+            </td>
+          </tr>
+          <tr class="detail-row" id="detail-${o.id}">
+            <td colspan="8" class="detail-cell">
+              <div class="detail-grid">
+                <div>
+                  <h4>Contact</h4>
+                  <p><strong>Name:</strong> ${o.full_name || '—'}</p>
+                  <p><strong>Email:</strong> ${o.email || '—'}</p>
+                  <p><strong>Phone:</strong> ${o.phone || '—'}</p>
+                </div>
+                <div>
+                  <h4>Order Info</h4>
+                  <p><strong>Fabric:</strong> ${o.fabric || '—'}</p>
+                  <p><strong>Style:</strong> ${o.style || '—'}</p>
+                  <p><strong>Occasion:</strong> ${o.occasion || '—'}</p>
+                  <p><strong>Status:</strong> ${statusBadge(o.status || 'received')}</p>
+                  <p><strong>Date:</strong> ${formatDate(o.created_at)}</p>
+                </div>
+                <div>
+                  <h4>Details</h4>
+                  <p><strong>Measurements:</strong> ${o.measurements || '—'}</p>
+                  <p><strong>Notes:</strong> ${o.notes || '—'}</p>
+                </div>
+              </div>
+            </td>
+          </tr>
+        `).join('')
+
+        // Status change handlers
+        tbody.querySelectorAll('.status-select').forEach(sel => {
+          sel.addEventListener('change', async function () {
+            const id = this.dataset.id
+            const msgEl = document.getElementById(`status-msg-${id}`)
+            const newStatus = this.value
+            msgEl.textContent = 'Updating...'
+            msgEl.style.color = 'var(--muted)'
+            const ok = await updateStatus(id, newStatus)
+            msgEl.textContent = ok ? '✓' : '✗ Failed'
+            msgEl.style.color = ok ? '#4cc978' : '#e74c3c'
+            if (ok) {
+              this.dataset.original = newStatus
+              // Update badge in detail row
+              const detailRow = document.getElementById(`detail-${id}`)
+              if (detailRow) {
+                const badge = detailRow.querySelector('.status-badge')
+                if (badge) {
+                  badge.className = statusBadge(newStatus).replace(/^<span class="/, '').replace(/".*/, '')
+                  badge.textContent = newStatus
+                }
+              }
+              setTimeout(() => { msgEl.textContent = '' }, 2500)
+            }
+          })
+        })
+
+        // Detail toggle handlers
+        tbody.querySelectorAll('.detail-toggle').forEach(btn => {
+          btn.addEventListener('click', function () {
+            const target = document.getElementById(this.dataset.target)
+            if (target) {
+              target.classList.toggle('visible')
+              this.textContent = target.classList.contains('visible') ? 'Hide' : 'Details'
+            }
+          })
+        })
+      }
+
+      loadingEl.style.display = 'none'
+      contentEl.style.display = ''
+    } catch (e) {
+      loadingEl.textContent = 'Failed to load custom orders.'
+      console.error(e)
+    }
+  }
+
+  loadOrders()
+</script>
+
+<footer>
+  <div class="kente-line" style="margin-bottom:1.5rem;"></div>
+  <div class="footer-bottom" style="padding:0 1.5rem 1.5rem;">
+    <p>&copy; <span id="copyright-year"></span> Kente Luxe. All rights reserved.</p>
+    <script>document.getElementById('copyright-year').textContent = new Date().getFullYear()</script>
+    <p>Crafted with pride in Ghana &#x1F1EC;&#x1F1ED;</p>
+  </div>
+</footer>
+
+</body>
+</html>
